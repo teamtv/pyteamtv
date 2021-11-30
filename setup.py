@@ -46,4 +46,4 @@ def setup_package():
 if __name__ == "__main__":
     setup_package()
 
-    del builtins.__KLOPPY_SETUP__
+    del builtins.__PYTEAMTV_SETUP__
