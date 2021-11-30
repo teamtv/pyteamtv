@@ -9,6 +9,8 @@ from .token import TOKEN
 
 class TeamTVApp(object):
     def __init__(self, jwt_token, app_id: str):
+        self.jwt_token = jwt_token
+
         token = jwt.decode(
            jwt_token,
            TOKEN,

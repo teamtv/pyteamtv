@@ -1,10 +1,8 @@
 import os
-from typing import Optional
+from typing import Optional, MutableMapping
 
-import streamlit as st
-
-from ..api import TeamTVUser, TeamTVApp
-from ..models.resource_group.team import TeamResourceGroup
+from pyteamtv import TeamTVUser, TeamTVApp
+from pyteamtv.models.resource_group.team import TeamResourceGroup
 
 
 class App:
@@ -15,10 +13,15 @@ class App:
             self.current_resource_group: Optional[TeamResourceGroup] = None
         else:
             self.membership_list = None
-            self.current_resource_group = api.get_resource_group()
+            self.current_resource_group: TeamResourceGroup = api.get_resource_group()
 
         self.observation_logs = dict()
         self.sporting_events = dict()
+
+    def should_refresh(self, token: Optional[str]):
+        if not token:
+            return False
+        return token != self.api.jwt_token
 
     def reset(self):
         self.observation_logs = dict()
@@ -44,7 +47,7 @@ class App:
                     reverse=True
                 )
             }
-        return self.sporting_events
+        return self.sporting_events.values()
 
     def get_sporting_event(self, sporting_event_id: str):
         if sporting_event_id not in self.sporting_events:
@@ -60,38 +63,28 @@ class App:
         return self.observation_logs[sporting_event_id]
 
 
-def get_current_app(app_id: str = None) -> App:
-    if 'current_app' not in st.session_state:
+def _get_current_app(app_id: Optional[str], session: MutableMapping, token: Optional[str]) -> App:
+    current_app: Optional[App] = session.get('current_app')
+
+    if not current_app or current_app.should_refresh(token):
         if 'TEAMTV_TOKEN' in os.environ:
-            jwt_token = os.environ['TEAMTV_TOKEN']
-            # token = jwt.decode(
-            #     jwt_token,
-            #     TOKEN,
-            #     options={
-            #         'verify_signature': False
-            #     }
-            # )
-            #
-            # print(token)
-            # return app.get_team(name)
-            api = TeamTVUser(jwt_token)
+            api = TeamTVUser(jwt_token=os.environ['TEAMTV_TOKEN'])
         else:
             if not app_id:
                 app_id = os.environ.get('TEAMTV_APP_ID')
                 if not app_id:
                     raise Exception("app_id must be set")
 
-            query_params = st.experimental_get_query_params()
-            if 'token' in query_params:
+            if token:
                 api = TeamTVApp(
-                    jwt_token=query_params['token'][0],
+                    jwt_token=token,
                     app_id=app_id
                 )
             else:
                 raise Exception("Token not set")
 
-        st.session_state['current_app'] = App(
+        session['current_app'] = App(
             api=api
         )
 
-    return st.session_state['current_app']
+    return session['current_app']

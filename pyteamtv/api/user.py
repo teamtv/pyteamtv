@@ -13,6 +13,8 @@ from ..models.resource_group.team import TeamResourceGroup
 
 class TeamTVUser(object):
     def __init__(self, jwt_token):
+        self.jwt_token = jwt_token
+
         token = jwt.decode(
             jwt_token,
             TOKEN,
