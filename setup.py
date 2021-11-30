@@ -36,6 +36,8 @@ def setup_package():
         ],
         install_requires=[
             "requests>=2.0.0",
+            "PyJWT>=1.7.1",
+            "pyjwt[crypto]>=1.7.1"
         ],
         extras_require={
             "test": ["pytest", "pandas>=1.0.0"],
