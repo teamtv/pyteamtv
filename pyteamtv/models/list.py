@@ -36,14 +36,16 @@ class List(Generic[T]):
         for item in self._items:
             yield item
 
-    def create(self, body) -> T:
-        data = self.requester.request('POST', self.url, body)
-        item = self.content_class(
-            self.requester,
-            data
-        )
-        self._items.append(item)
-        return item
+    # TODO: not used yet, might be usefull
+    # when /api/sportingEvent/<uuid>/videos endpoint exists
+    # def create(self, body) -> T:
+    #     data = self.requester.request('POST', self.url, body)
+    #     item = self.content_class(
+    #         self.requester,
+    #         data
+    #     )
+    #     self._items.append(item)
+    #     return item
 
 
 
