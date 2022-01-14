@@ -17,3 +17,6 @@ class _ResourceGroup(TeamTVObject, _HasStorage):
     @property
     def name(self):
         return self._name
+
+    def __repr__(self):
+        return f"<ResourceGroup name='{self.name}'>"

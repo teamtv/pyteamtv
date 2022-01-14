@@ -10,3 +10,6 @@ class TeamTVObject(object):
 
     def _use_attributes(self, attributes: dict):
         pass
+
+    def refresh(self):
+        pass

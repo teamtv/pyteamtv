@@ -7,7 +7,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 class Requester(object):
     def __init__(self, base_url, jwt_token, headers:dict = None):
         self._base_url = base_url
