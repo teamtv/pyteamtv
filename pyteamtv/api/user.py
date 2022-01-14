@@ -1,3 +1,5 @@
+from typing import Optional
+
 import jwt
 
 from pyteamtv.infra.requester import Requester
@@ -8,6 +10,7 @@ from pyteamtv.models.sharing_group import SharingGroup
 
 from .endpoint import API_ENDPOINT
 from .token import TOKEN
+from ..exceptions import TeamNotFound, InputError
 from ..models.resource_group.team import TeamResourceGroup
 
 
@@ -50,9 +53,21 @@ class TeamTVUser(object):
             "/sharingGroups"
         )
 
-    def get_team(self, name: str) -> TeamResourceGroup:
+    def get_team(self, name: Optional[str] = None, resource_group_id: Optional[str] = None) -> TeamResourceGroup:
         membership_list = self.get_membership_list()
-        resource_group = membership_list.get_membership_by_name(
-            name=name
-        ).resource_group  # type: TeamResourceGroup
-        return resource_group
+        if resource_group_id:
+            membership = membership_list.get_membership_by_resource_group_id(
+                resource_group_id
+            )
+        elif name:
+            membership = membership_list.get_membership_by_name(
+                name=name
+            )
+        else:
+            raise InputError(f"Either `name` or `resource_group_id` must be specified.")
+
+        if not membership:
+            raise TeamNotFound(f"No team named '{name}' found.")
+        return membership.resource_group
+
+
