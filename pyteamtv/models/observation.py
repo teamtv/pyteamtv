@@ -27,6 +27,10 @@ class Observation(TeamTVObject):
         return self._clock_id
 
     @property
+    def description(self) -> str:
+        return self._description
+
+    @property
     def attributes(self) -> dict:
         return self._attributes
 
@@ -37,4 +41,5 @@ class Observation(TeamTVObject):
         self._end_time = attributes['endTime']
         self._code = attributes['code']
         self._attributes = attributes['attributes'] or dict()
+        self._description = attributes['description']
         self._clock_id = attributes['clockId']

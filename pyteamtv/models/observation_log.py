@@ -97,6 +97,7 @@ class ObservationLog(List[Observation]):
                     start_time=observation.start_time,
                     end_time=observation.end_time,
                     code=observation.code,
+                    description=observation.description,
                     **attributes
                 )
 
