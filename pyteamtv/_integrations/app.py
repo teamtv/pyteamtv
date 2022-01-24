@@ -62,6 +62,13 @@ class App:
             self.observation_logs[sporting_event_id] = sporting_event.get_observation_log()
         return self.observation_logs[sporting_event_id]
 
+    def get_sports_type(self) -> Optional[str]:
+        tenant_id = self.current_resource_group.tenant_id
+        for sports_type in ["korfball", "soccer", "hockey", "tennis", "handball", "volleybal"]:
+            if sports_type in tenant_id:
+                return sports_type
+        return None
+
 
 def _get_current_app(app_id: Optional[str], session: MutableMapping, token: Optional[str]) -> App:
     current_app: Optional[App] = session.get('current_app')
