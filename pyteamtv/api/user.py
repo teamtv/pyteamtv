@@ -70,4 +70,9 @@ class TeamTVUser(object):
             raise TeamNotFound(f"No team named '{name}' found.")
         return membership.resource_group
 
+    def get_memberships(self,
+                        tenant_id: Optional[str] = None,
+                        type_: Optional[str] = None) -> List[Membership]:
+        return self.get_membership_list().get_memberships(tenant_id, type_)
+
 
