@@ -66,7 +66,11 @@ class SportingEvent(TeamTVObject):
             item_filter=_filter
         )
 
-    def upload_video(self, *file_paths: str) -> Video:
+    def upload_video(self, *file_paths: str, chunks_per_request: int = 1) -> Video:
+        chunks_per_request = int(chunks_per_request)
+        if chunks_per_request < 1:
+            chunks_per_request = 1
+
         files = []
         for filename in file_paths:
             files.append({
@@ -93,7 +97,7 @@ class SportingEvent(TeamTVObject):
             uploader = Uploader(
                 file_paths[i],
                 url=part['tusUploadUrl'],
-                chunk_size=25 * 1024 * 1024,
+                chunk_size=chunks_per_request * 25 * 1024 * 1024,
                 log_func=lambda msg: logging.info(f"Uploading: {msg}"),
 
                 retries=5,
