@@ -50,4 +50,4 @@ class MembershipList(List):
                 memberships
             )
 
-        return list[Membership](memberships)
+        return list(memberships)
