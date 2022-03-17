@@ -47,5 +47,8 @@ class List(Generic[T]):
     #     self._items.append(item)
     #     return item
 
+    def __repr__(self):
+        return str(self._items)
+
 
 

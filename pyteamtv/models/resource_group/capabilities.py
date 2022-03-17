@@ -81,37 +81,6 @@ class _HasExercisesMixin(BaseMixin):
         )
 
 
-class _HasSharingGroupResourceGroupsMixin(BaseMixin):
-    def get_sharing_group_resource_groups(self):
-        from .factory import factory
-
-        return List(
-            factory,
-            self._requester,
-            "GET",
-            "/resourceGroups"
-        )
-
-    def create_sharing_group_resource_group(self, name: str, description: str, sport_type: str, visibility_type: str = 'public', attributes:dict = None):
-        from .factory import factory
-
-        data = self._requester.request(
-            "POST",
-            "/resourceGroups",
-            dict(
-                name=name,
-                sportType=sport_type,
-                description=description,
-                visibility_type=visibility_type,
-                attributes=attributes if attributes else {}
-            )
-        )
-        return factory(
-            self._requester,
-            data
-        )
-
-
 class _HasSportingEventsMixin(BaseMixin):
     def get_sporting_events(self):
         return List[SportingEvent](
@@ -171,6 +140,48 @@ class _HasVideosMixin(BaseMixin):
         )
 
         return Video(
+            self._requester,
+            data
+        )
+
+
+class _HasResourceGroupsMixin(BaseMixin):
+    def get_resource_groups(self):
+        from .factory import factory
+
+        return List(
+            factory,
+            self._requester,
+            "GET",
+            "/resourceGroups"
+        )
+
+    def join(self, resource_group_id: str):
+        self._requester.request(
+            "POST",
+            f"/resourceGroups/{resource_group_id}/join"
+        )
+
+
+class _HasSharingGroupResourceGroupsMixin(BaseMixin):
+    def get_sharing_group_resource_groups(self):
+        return _HasResourceGroupsMixin.get_resource_groups(self)
+
+    def create_sharing_group_resource_group(self, name: str, description: str, sport_type: str, visibility_type: str = 'public', attributes:dict = None):
+        from .factory import factory
+
+        data = self._requester.request(
+            "POST",
+            "/resourceGroups",
+            dict(
+                name=name,
+                sportType=sport_type,
+                description=description,
+                visibility_type=visibility_type,
+                attributes=attributes if attributes else {}
+            )
+        )
+        return factory(
             self._requester,
             data
         )

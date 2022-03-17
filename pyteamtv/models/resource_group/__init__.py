@@ -24,3 +24,9 @@ class _ResourceGroup(TeamTVObject, _HasStorage):
 
     def __repr__(self):
         return f"<ResourceGroup name='{self.name}'>"
+
+    def __eq__(self, other):
+        if not isinstance(other, _ResourceGroup):
+            return False
+
+        return other.resource_group_id == self.resource_group_id
