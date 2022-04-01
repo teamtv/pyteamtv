@@ -1,7 +1,7 @@
 import logging
 import os
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
 from .list import List
 from .observation import Observation
@@ -21,7 +21,12 @@ class Clock(TeamTVObject):
     def synchronization_points(self):
         return self._synchronization_points
 
-    def add_synchronization_point(self, type_: str, key: str, time):
+    def add_synchronization_point(self, type_: str, key: str, time: Union[float, datetime]):
+        if self.clock_id == 'U1':
+            formatted_time = datetime.isoformat(time).replace("+00:00", "Z")
+        else:
+            formatted_time = float(time)
+
         self._requester.request(
             "POST",
             f"/sportingEvents/{self._sporting_event_id}/addSynchronizationPoint",
@@ -29,7 +34,7 @@ class Clock(TeamTVObject):
                 'clockId': self._clock_id,
                 'type': type_,
                 'key': key,
-                'time': time
+                'time': formatted_time
             }
         )
 
@@ -62,7 +67,19 @@ class Clock(TeamTVObject):
     def _use_attributes(self, attributes: dict):
         self._sporting_event_id = attributes['sportingEventId']
         self._clock_id = attributes['clockId']
-        self._synchronization_points = attributes['synchronizationPoints']
+        self._synchronization_points = [
+            {
+                'type': synchronization_point['type'],
+                'key': synchronization_point['key'],
+                'time': (
+                    float(synchronization_point['time'])
+                    if self._clock_id != 'U1' else
+                    datetime.fromisoformat(synchronization_point['time'].replace("Z", "+00:00"))
+                )
+            }
+            for synchronization_point in
+            attributes['synchronizationPoints']
+        ]
 
     def __repr__(self):
         return f"<Clock id={self._clock_id} synchronization_points={self._synchronization_points}>"

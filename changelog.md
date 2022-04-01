@@ -1,3 +1,8 @@
+## 0.7.1 (2022-04-01)
+
+Bugfix:
+- Correct time format for Clock
+
 ## 0.7.0 (2022-04-01)
 
 Feature:
