@@ -11,6 +11,62 @@ from .video import Video
 
 from tusclient.uploader import Uploader
 
+
+class Clock(TeamTVObject):
+    @property
+    def clock_id(self):
+        return self._clock_id
+
+    @property
+    def synchronization_points(self):
+        return self._synchronization_points
+
+    def add_synchronization_point(self, type_: str, key: str, time):
+        self._requester.request(
+            "POST",
+            f"/sportingEvents/{self._sporting_event_id}/addSynchronizationPoint",
+            {
+                'clockId': self._clock_id,
+                'type': type_,
+                'key': key,
+                'time': time
+            }
+        )
+
+        # TODO: maybe get this one from backend
+        self._synchronization_points.append(
+            {
+                "type": type_,
+                "key": str(key),
+                "time": time
+            }
+        )
+
+    def remove_synchronization_point(self, type_: str, key: str):
+        self._requester.request(
+            "POST",
+            f"/sportingEvents/{self._sporting_event_id}/removeSynchronizationPoint",
+            {
+                'clockId': self._clock_id,
+                'type': type_,
+                'key': key
+            }
+        )
+
+        # TODO: maybe get this one from backend
+        for i, synchronization_point in enumerate(self._synchronization_points):
+            if synchronization_point['type'] == type_ and synchronization_point['key'] == str(key):
+                self._synchronization_points.pop(i)
+                break
+
+    def _use_attributes(self, attributes: dict):
+        self._sporting_event_id = attributes['sportingEventId']
+        self._clock_id = attributes['clockId']
+        self._synchronization_points = attributes['synchronizationPoints']
+
+    def __repr__(self):
+        return f"<Clock id={self._clock_id} synchronization_points={self._synchronization_points}>"
+
 class SportingEvent(TeamTVObject):
     @property
     def scheduled_at(self) -> datetime:
@@ -37,6 +93,23 @@ class SportingEvent(TeamTVObject):
     @property
     def is_local(self):
         return self._is_local
+
+    def get_clock(self, id_: str) -> Optional[Clock]:
+        if id_ not in self._clocks:
+            for key, clock in self._clocks.items():
+                if clock['clockId'] == id_:
+                    id_ = key
+                    break
+            else:
+                return None
+
+        return Clock(
+            self._requester,
+            {
+                "sportingEventId": self.sporting_event_id,
+                **self._clocks[id_]
+            }
+        )
 
     def get_observation_log(self) -> ObservationLog:
         video_id = self.main_video_id
