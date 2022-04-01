@@ -1,3 +1,8 @@
+## 0.7.0 (2022-04-01)
+
+Feature:
+- Add Clock to SportingEvent
+
 ## 0.1.0 (2022-01-14)
 
 Feature:
