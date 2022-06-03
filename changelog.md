@@ -1,3 +1,8 @@
+## 0.8.0 (2022-06-03)
+
+Feature:
+- Add support for video tags
+
 ## 0.7.1 (2022-04-01)
 
 Bugfix:
