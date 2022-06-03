@@ -156,7 +156,7 @@ class SportingEvent(TeamTVObject):
             item_filter=_filter
         )
 
-    def upload_video(self, *file_paths: str, chunks_per_request: int = 1) -> Video:
+    def upload_video(self, *file_paths: str, chunks_per_request: int = 1, tags: Optional[dict] = None) -> Video:
         chunks_per_request = int(chunks_per_request)
         if chunks_per_request < 1:
             chunks_per_request = 1
@@ -172,7 +172,8 @@ class SportingEvent(TeamTVObject):
             "POST",
             f"/sportingEvents/{self.sporting_event_id}/initVideoUpload",
             {
-                "files": files
+                "files": files,
+                "tags": tags or {}
             }
         )
 

@@ -18,6 +18,10 @@ class Video(TeamTVObject):
     def state(self):
         return self._state
 
+    @property
+    def tags(self):
+        return self._tags
+
     def __repr__(self):
         return f"<Video video_id={self.video_id} state={self.state}>"
 
@@ -26,3 +30,4 @@ class Video(TeamTVObject):
         self._parts = attributes['parts']
         self._media_url = attributes.get('mediaUrl')
         self._state = attributes['state']
+        self._tags = attributes.get('tags', {})
