@@ -9,7 +9,7 @@ class MembershipList(List):
         return list(
             filter(
                 lambda membership: isinstance(membership.resource_group, class_),
-                self._items
+                self._items,
             )
         )
 
@@ -25,14 +25,14 @@ class MembershipList(List):
                 return membership
         return None
 
-    def get_memberships(self,
-                        tenant_id: Optional[str] = None,
-                        type_: Optional[str] = None) -> List[Membership]:
+    def get_memberships(
+        self, tenant_id: Optional[str] = None, type_: Optional[str] = None
+    ) -> List[Membership]:
         memberships = self._items
         if tenant_id:
             memberships = filter(
                 lambda membership: membership.resource_group.tenant_id == tenant_id,
-                memberships
+                memberships,
             )
 
         if type_:
@@ -40,14 +40,14 @@ class MembershipList(List):
             from .resource_group.team import TeamResourceGroup
 
             class_map: Dict[str, Type] = {
-                'team': TeamResourceGroup,
-                'club': ClubResourceGroup
+                "team": TeamResourceGroup,
+                "club": ClubResourceGroup,
             }
             class_ = class_map[type_]
 
             memberships = filter(
                 lambda membership: isinstance(membership.resource_group, class_),
-                memberships
+                memberships,
             )
 
         return list(memberships)

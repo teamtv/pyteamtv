@@ -19,7 +19,7 @@ class Team(TeamTVObject):
         return self._tags
 
     def _use_attributes(self, attributes: dict):
-        self._team_id = attributes['teamId']
-        self._name = attributes['name']
-        self._sport_type = attributes['sportType']
-        self._tags = attributes.get('tags', {})
+        self._team_id = attributes["teamId"]
+        self._name = attributes["name"]
+        self._sport_type = attributes["sportType"]
+        self._tags = attributes.get("tags", {})

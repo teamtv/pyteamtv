@@ -11,5 +11,5 @@ class Club(TeamTVObject):
         return self._club_id
 
     def _use_attributes(self, attributes: dict):
-        self._club_id = attributes['clubId']
-        self._name = attributes['name']
+        self._club_id = attributes["clubId"]
+        self._name = attributes["name"]

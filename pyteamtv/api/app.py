@@ -12,29 +12,16 @@ class TeamTVApp(object):
         self.jwt_token = jwt_token
 
         token = jwt.decode(
-           jwt_token,
-           TOKEN,
-           algorithms='RS256',
-           verify=True,
-           audience=f"app:{app_id}"
+            jwt_token, TOKEN, algorithms="RS256", verify=True, audience=f"app:{app_id}"
         )
 
-        self._requester = Requester(
-            f"{API_ENDPOINT}/api",
-            jwt_token
-        )
+        self._requester = Requester(f"{API_ENDPOINT}/api", jwt_token)
         self.__token = token
 
     def get_resource_group(self):
         """
         :rtype: :class:`pyteamtv.resource_group.team.Team`
         """
-        data = self._requester.request(
-           "GET",
-           "/resourceGroups/current"
-        )
+        data = self._requester.request("GET", "/resourceGroups/current")
 
-        return resource_group_factory(
-           self._requester,
-           data
-        )
+        return resource_group_factory(self._requester, data)

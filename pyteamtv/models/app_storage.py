@@ -23,11 +23,11 @@ class AppStorageTokens(TeamTVObject):
 
     def _use_attributes(self, attributes: dict):
         self._credentials = Credentials(
-            access_key_id=attributes['credentials']['accessKeyId'],
-            secret_access_key=attributes['credentials']['secretAccessKey'],
-            session_token=attributes['credentials']['sessionToken']
+            access_key_id=attributes["credentials"]["accessKeyId"],
+            secret_access_key=attributes["credentials"]["secretAccessKey"],
+            session_token=attributes["credentials"]["sessionToken"],
         )
         self._bucket_info = BucketInfo(
-            bucket=attributes['storage']['bucket'],
-            base_key=attributes['storage']['baseKey']
+            bucket=attributes["storage"]["bucket"],
+            base_key=attributes["storage"]["baseKey"],
         )

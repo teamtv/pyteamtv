@@ -27,9 +27,9 @@ class SharingGroup(TeamTVObject):
         return self._attributes
 
     def _use_attributes(self, attributes: dict):
-        self._name = attributes['name']
-        self._description = attributes['description']
-        self._visibility_type = attributes['visibilityType']
-        self._tenant_id = attributes['tenantId']
-        self._sharing_group_id = attributes['sharingGroupId']
-        self._attributes = attributes['attributes']
+        self._name = attributes["name"]
+        self._description = attributes["description"]
+        self._visibility_type = attributes["visibilityType"]
+        self._tenant_id = attributes["tenantId"]
+        self._sharing_group_id = attributes["sharingGroupId"]
+        self._attributes = attributes["attributes"]

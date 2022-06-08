@@ -44,54 +44,60 @@ class App:
                 for sporting_event in sorted(
                     self.current_resource_group.get_sporting_events(),
                     key=lambda sporting_event: sporting_event.scheduled_at,
-                    reverse=True
+                    reverse=True,
                 )
             }
         return self.sporting_events.values()
 
     def get_sporting_event(self, sporting_event_id: str):
         if sporting_event_id not in self.sporting_events:
-            self.sporting_events[sporting_event_id] = self.current_resource_group.get_sporting_event(
+            self.sporting_events[
                 sporting_event_id
-            )
+            ] = self.current_resource_group.get_sporting_event(sporting_event_id)
         return self.sporting_events[sporting_event_id]
 
     def get_observation_log(self, sporting_event_id: str):
         if sporting_event_id not in self.observation_logs:
             sporting_event = self.get_sporting_event(sporting_event_id)
-            self.observation_logs[sporting_event_id] = sporting_event.get_observation_log()
+            self.observation_logs[
+                sporting_event_id
+            ] = sporting_event.get_observation_log()
         return self.observation_logs[sporting_event_id]
 
     def get_sports_type(self) -> Optional[str]:
         tenant_id = self.current_resource_group.tenant_id
-        for sports_type in ["korfball", "soccer", "hockey", "tennis", "handball", "volleybal"]:
+        for sports_type in [
+            "korfball",
+            "soccer",
+            "hockey",
+            "tennis",
+            "handball",
+            "volleybal",
+        ]:
             if sports_type in tenant_id:
                 return sports_type
         return None
 
 
-def _get_current_app(app_id: Optional[str], session: MutableMapping, token: Optional[str]) -> App:
-    current_app: Optional[App] = session.get('current_app')
+def _get_current_app(
+    app_id: Optional[str], session: MutableMapping, token: Optional[str]
+) -> App:
+    current_app: Optional[App] = session.get("current_app")
 
     if not current_app or current_app.should_refresh(token):
-        if 'TEAMTV_TOKEN' in os.environ:
-            api = TeamTVUser(jwt_token=os.environ['TEAMTV_TOKEN'])
+        if "TEAMTV_TOKEN" in os.environ:
+            api = TeamTVUser(jwt_token=os.environ["TEAMTV_TOKEN"])
         else:
             if not app_id:
-                app_id = os.environ.get('TEAMTV_APP_ID')
+                app_id = os.environ.get("TEAMTV_APP_ID")
                 if not app_id:
                     raise Exception("app_id must be set")
 
             if token:
-                api = TeamTVApp(
-                    jwt_token=token,
-                    app_id=app_id
-                )
+                api = TeamTVApp(jwt_token=token, app_id=app_id)
             else:
                 raise Exception("Token not set")
 
-        session['current_app'] = App(
-            api=api
-        )
+        session["current_app"] = App(api=api)
 
-    return session['current_app']
+    return session["current_app"]

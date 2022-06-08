@@ -26,8 +26,8 @@ class Video(TeamTVObject):
         return f"<Video video_id={self.video_id} state={self.state}>"
 
     def _use_attributes(self, attributes: dict):
-        self._video_id = attributes['videoId']
-        self._parts = attributes['parts']
-        self._media_url = attributes.get('mediaUrl')
-        self._state = attributes['state']
-        self._tags = attributes.get('tags', {})
+        self._video_id = attributes["videoId"]
+        self._parts = attributes["parts"]
+        self._media_url = attributes.get("mediaUrl")
+        self._state = attributes["state"]
+        self._tags = attributes.get("tags", {})

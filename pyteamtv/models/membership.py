@@ -16,17 +16,17 @@ class Membership(TeamTVObject):
         return self._member_attributes
 
     def _use_attributes(self, attributes: dict):
-        self._role_names = attributes['roleNames']
-        self._member_attributes = attributes['memberAttributes']
+        self._role_names = attributes["roleNames"]
+        self._member_attributes = attributes["memberAttributes"]
 
         self._resource_group = resource_group_factory(
             self._requester,
             dict(
-                tenantId=attributes['tenantId'],
-                resourceGroupId=attributes['resourceGroupId'],
-                targetResourceId=attributes['targetResourceId'],
-                targetResourceName=attributes['targetResourceName']
-            )
+                tenantId=attributes["tenantId"],
+                resourceGroupId=attributes["resourceGroupId"],
+                targetResourceId=attributes["targetResourceId"],
+                targetResourceName=attributes["targetResourceName"],
+            ),
         )
 
     def __repr__(self):

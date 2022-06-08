@@ -17,24 +17,24 @@ def factory(requester: Requester, attributes: dict):
     :rtype: Team
     """
     _CLASSES = {
-        'team': TeamResourceGroup,
-        'club': ClubResourceGroup,
-        'SharingGroup': SharingGroupResourceGroup,
-        'reseller': ResellerResourceGroup,
-        'exchange': ExchangeResourceGroup,
-        'app-developer': AppDeveloperResourceGroup,
-        'user': UserResourceGroup,
-        'person': PersonResourceGroup
+        "team": TeamResourceGroup,
+        "club": ClubResourceGroup,
+        "SharingGroup": SharingGroupResourceGroup,
+        "reseller": ResellerResourceGroup,
+        "exchange": ExchangeResourceGroup,
+        "app-developer": AppDeveloperResourceGroup,
+        "user": UserResourceGroup,
+        "person": PersonResourceGroup,
     }
 
-    target_resource_type, target_resource_id = attributes['targetResourceId'].split(":")
+    target_resource_type, target_resource_id = attributes["targetResourceId"].split(":")
 
     if target_resource_type not in _CLASSES:
         raise Exception(f"Unknown resource group type {target_resource_type}")
 
     return _CLASSES[target_resource_type](
-        requester.with_extra_headers({
-            'X-Resource-Group-Id': attributes['resourceGroupId']
-        }),
-        attributes
+        requester.with_extra_headers(
+            {"X-Resource-Group-Id": attributes["resourceGroupId"]}
+        ),
+        attributes,
     )

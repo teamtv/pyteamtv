@@ -6,9 +6,9 @@ class _ResourceGroup(TeamTVObject, _HasStorage):
     def _use_attributes(self, attributes: dict):
         super()._use_attributes(attributes)
 
-        self._name = attributes['targetResourceName']
-        self._tenant_id = attributes['tenantId']
-        self._resource_group_id = attributes['resourceGroupId']
+        self._name = attributes["targetResourceName"]
+        self._tenant_id = attributes["tenantId"]
+        self._resource_group_id = attributes["resourceGroupId"]
 
     @property
     def resource_group_id(self):

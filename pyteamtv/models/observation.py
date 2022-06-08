@@ -35,11 +35,11 @@ class Observation(TeamTVObject):
         return self._attributes
 
     def _use_attributes(self, attributes: dict):
-        self._observation_id = attributes['observationId']
-        self._start_time = attributes['startTime']
-        self._trigger_time = attributes['triggerTime']
-        self._end_time = attributes['endTime']
-        self._code = attributes['code']
-        self._attributes = attributes['attributes'] or dict()
-        self._description = attributes['description']
-        self._clock_id = attributes['clockId']
+        self._observation_id = attributes["observationId"]
+        self._start_time = attributes["startTime"]
+        self._trigger_time = attributes["triggerTime"]
+        self._end_time = attributes["endTime"]
+        self._code = attributes["code"]
+        self._attributes = attributes["attributes"] or dict()
+        self._description = attributes["description"]
+        self._clock_id = attributes["clockId"]

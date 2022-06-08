@@ -11,5 +11,5 @@ def get_current_app(app_id: Optional[str] = None) -> App:
     return _get_current_app(
         app_id=app_id,
         session=st.session_state,
-        token=query_params.get('token', [None])[0]
+        token=query_params.get("token", [None])[0],
     )

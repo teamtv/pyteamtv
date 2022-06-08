@@ -2,29 +2,26 @@ from typing import TypeVar, Type, Generic, Optional, Callable
 
 from pyteamtv.infra.requester import Requester
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class List(Generic[T]):
-    def __init__(self,
-                 content_class: Type[T],
-                 requester: Requester,
-                 method: str,
-                 url: str,
-                 item_filter: Optional[Callable[[T], bool]] = None):
+    def __init__(
+        self,
+        content_class: Type[T],
+        requester: Requester,
+        method: str,
+        url: str,
+        item_filter: Optional[Callable[[T], bool]] = None,
+    ):
         self.requester = requester
         self.content_class = content_class
         self.url = url
 
         data = requester.request(method, url)
-        items = [content_class(
-            requester,
-            item
-        ) for item in data]
+        items = [content_class(requester, item) for item in data]
         if item_filter:
-            self._items = [
-                item for item in items if item_filter(item)
-            ]
+            self._items = [item for item in items if item_filter(item)]
         else:
             self._items = items
 
@@ -49,6 +46,3 @@ class List(Generic[T]):
 
     def __repr__(self):
         return str(self._items)
-
-
-

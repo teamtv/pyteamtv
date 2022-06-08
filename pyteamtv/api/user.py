@@ -21,17 +21,12 @@ class TeamTVUser(object):
         token = jwt.decode(
             jwt_token,
             TOKEN,
-            algorithms='RS256',
+            algorithms="RS256",
             verify=False,
-            options={
-                'verify_signature': False
-            }
+            options={"verify_signature": False},
         )
 
-        self._requester = Requester(
-            f"{API_ENDPOINT}/api",
-            jwt_token
-        )
+        self._requester = Requester(f"{API_ENDPOINT}/api", jwt_token)
         self.__token = token
 
     def get_membership_list(self):
@@ -39,30 +34,22 @@ class TeamTVUser(object):
         :return: MembershipList
         """
         return MembershipList(
-            Membership,
-            self._requester,
-            "GET",
-            "/users/me/memberships"
+            Membership, self._requester, "GET", "/users/me/memberships"
         )
 
     def get_public_sharing_groups(self):
-        return List(
-            SharingGroup,
-            self._requester,
-            "GET",
-            "/sharingGroups"
-        )
+        return List(SharingGroup, self._requester, "GET", "/sharingGroups")
 
-    def get_team(self, name: Optional[str] = None, resource_group_id: Optional[str] = None) -> TeamResourceGroup:
+    def get_team(
+        self, name: Optional[str] = None, resource_group_id: Optional[str] = None
+    ) -> TeamResourceGroup:
         membership_list = self.get_membership_list()
         if resource_group_id:
             membership = membership_list.get_membership_by_resource_group_id(
                 resource_group_id
             )
         elif name:
-            membership = membership_list.get_membership_by_name(
-                name=name
-            )
+            membership = membership_list.get_membership_by_name(name=name)
         else:
             raise InputError(f"Either `name` or `resource_group_id` must be specified.")
 
@@ -70,9 +57,7 @@ class TeamTVUser(object):
             raise TeamNotFound(f"No team named '{name}' found.")
         return membership.resource_group
 
-    def get_memberships(self,
-                        tenant_id: Optional[str] = None,
-                        type_: Optional[str] = None) -> List[Membership]:
+    def get_memberships(
+        self, tenant_id: Optional[str] = None, type_: Optional[str] = None
+    ) -> List[Membership]:
         return self.get_membership_list().get_memberships(tenant_id, type_)
-
-
