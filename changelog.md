@@ -1,3 +1,8 @@
+## 0.8.1 (2022-06-08)
+
+Bugfix:
+- Pass description to initVideoUpload
+
 ## 0.8.0 (2022-06-03)
 
 Feature:

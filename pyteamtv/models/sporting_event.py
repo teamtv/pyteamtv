@@ -154,7 +154,11 @@ class SportingEvent(TeamTVObject):
         return List(Video, self._requester, "GET", "/videos", item_filter=_filter)
 
     def upload_video(
-        self, *file_paths: str, chunks_per_request: int = 1, tags: Optional[dict] = None
+        self,
+        *file_paths: str,
+        chunks_per_request: int = 1,
+        tags: Optional[dict] = None,
+        description: Optional[str] = None,
     ) -> Video:
         chunks_per_request = int(chunks_per_request)
         if chunks_per_request < 1:
@@ -169,7 +173,7 @@ class SportingEvent(TeamTVObject):
         video_id = self._requester.request(
             "POST",
             f"/sportingEvents/{self.sporting_event_id}/initVideoUpload",
-            {"files": files, "tags": tags or {}},
+            {"files": files, "tags": tags or {}, "description": description},
         )
 
         video = Video(
