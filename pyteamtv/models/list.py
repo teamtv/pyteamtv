@@ -46,3 +46,6 @@ class List(Generic[T]):
 
     def __repr__(self):
         return str(self._items)
+
+    def __bool__(self):
+        return len(self._items) > 0

@@ -1,3 +1,8 @@
+## 0.8.2 (2022-06-10)
+
+Bugfix:
+- Make sure bool(List) returns correct result based on items
+
 ## 0.8.1 (2022-06-08)
 
 Bugfix:
