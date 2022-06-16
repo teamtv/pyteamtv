@@ -3,3 +3,7 @@
 .env
 .*
 *pycache*
+examples
+build
+dist
+*.egg*
