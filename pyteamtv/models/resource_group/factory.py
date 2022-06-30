@@ -1,4 +1,5 @@
 from pyteamtv.infra.requester import Requester
+from .education import EducationResourceGroup
 from .person import PersonResourceGroup
 from .team import TeamResourceGroup
 from .club import ClubResourceGroup
@@ -25,6 +26,7 @@ def factory(requester: Requester, attributes: dict):
         "app-developer": AppDeveloperResourceGroup,
         "user": UserResourceGroup,
         "person": PersonResourceGroup,
+        "education": EducationResourceGroup,
     }
 
     target_resource_type, target_resource_id = attributes["targetResourceId"].split(":")

@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from typing import Optional, Union
 
+from .event_stream import EventStream
 from .list import List
 from .observation import Observation
 from .observation_log import ObservationLog
@@ -152,6 +153,22 @@ class SportingEvent(TeamTVObject):
             )
 
         return List(Video, self._requester, "GET", "/videos", item_filter=_filter)
+
+    def get_event_streams(self) -> List[EventStream]:
+        return List(
+            EventStream,
+            self._requester,
+            "GET",
+            f"/sportingEvents/{self.sporting_event_id}/eventStreams",
+        )
+
+    def create_event_stream(self) -> EventStream:
+        return EventStream(
+            self._requester,
+            self._requester.request(
+                "POST", f"/sportingEvents/{self.sporting_event_id}/eventStreams"
+            ),
+        )
 
     def upload_video(
         self,

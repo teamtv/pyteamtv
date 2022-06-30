@@ -1,7 +1,9 @@
 from datetime import datetime
+from typing import Literal, Optional
 
 from pyteamtv.infra.requester import Requester
 from ..list import List
+from ..person import Person
 
 from ..sporting_event import SportingEvent
 from ..team import Team
@@ -104,6 +106,31 @@ class _HasVideosMixin(BaseMixin):
         data = self._requester.request("GET", f"/videos/{video_id}")
 
         return Video(self._requester, data)
+
+
+class _HasPersonsMixin(BaseMixin):
+    def get_persons(self):
+        return List(Person, self._requester, "GET", "/persons")
+
+    def create_person(
+        self,
+        first_name: str,
+        last_name: str,
+        tags: Optional[dict] = None,
+        gender: Optional[Literal["male", "female"]] = None,
+    ):
+        data = self._requester.request(
+            "POST",
+            "/persons",
+            {
+                "firstName": first_name,
+                "lastName": last_name,
+                "tags": tags,
+                "gender": gender,
+            },
+        )
+
+        return Person(self._requester, data)
 
 
 class _HasResourceGroupsMixin(BaseMixin):
