@@ -1,3 +1,8 @@
+## 0.9.0 (2022-07-01)
+
+Feature:
+- Add models for Person, Player, LineUp, EventStream
+
 ## 0.8.2 (2022-06-10)
 
 Bugfix:
