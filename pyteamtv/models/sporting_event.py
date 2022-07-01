@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Optional, Union
 
 from .event_stream import EventStream
+from .line_up import LineUp
 from .list import List
 from .observation import Observation
 from .observation_log import ObservationLog
@@ -101,6 +102,10 @@ class SportingEvent(TeamTVObject):
         return self._tags
 
     @property
+    def line_up_id(self):
+        return self._line_up_id
+
+    @property
     def main_video_id(self) -> Optional[str]:
         if self._video_ids:
             return self._video_ids[0]
@@ -170,6 +175,17 @@ class SportingEvent(TeamTVObject):
             ),
         )
 
+    def get_line_up(self) -> LineUp:
+        data = self._requester.request(
+                "GET",
+                f"/lineUps/{self.line_up_id}"
+            )
+        data['sportingEvent'] = self
+        return LineUp(
+            self._requester,
+            data
+        )
+
     def upload_video(
         self,
         *file_paths: str,
@@ -218,6 +234,7 @@ class SportingEvent(TeamTVObject):
         self._tags = attributes.get("tags", {})
         self._video_ids = attributes.get("videoIds", [])
         self._clocks = attributes["clocks"]
+        self._line_up_id = attributes["lineUpId"]
         self._scheduled_at = datetime.fromisoformat(
             attributes["scheduledAt"].replace("Z", "+00:00")
         )

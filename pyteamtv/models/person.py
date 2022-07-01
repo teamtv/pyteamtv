@@ -26,6 +26,9 @@ class Person(TeamTVObject):
     def tags(self):
         return self._tags
 
+    def __hash__(self):
+        return hash(self.person_id)
+
     def __eq__(self, other):
         return isinstance(other, Person) and other.person_id == self.person_id
 

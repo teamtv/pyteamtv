@@ -33,6 +33,11 @@ class List(Generic[T]):
         for item in self._items:
             yield item
 
+    def find_by(self, fn: Callable[[T], bool]) -> Optional[T]:
+        for item in self:
+            if fn(item):
+                return item
+
     # TODO: not used yet, might be usefull
     # when /api/sportingEvent/<uuid>/videos endpoint exists
     # def create(self, body) -> T:

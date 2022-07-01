@@ -22,10 +22,14 @@ class Team(TeamTVObject):
         return self._tags
 
     def _use_attributes(self, attributes: dict):
+        tags = attributes.get("tags", {})
+        if not isinstance(tags, dict):
+            tags = {}
+
         self._team_id = attributes["teamId"]
         self._name = attributes["name"]
         self._sport_type = attributes["sportType"]
-        self._tags = attributes.get("tags", {})
+        self._tags = tags
 
     def __repr__(self):
         return f"<Team name={self.name} team_id={self.team_id}>"
