@@ -52,6 +52,8 @@ class LineUp(TeamTVObject):
         self._sporting_event = attributes['sportingEvent']
         self._line_up_id = attributes["lineUpId"]
         self._roles_per_team = attributes["rolesPerTeam"]
+        if not isinstance(self._roles_per_team, dict):
+            self._roles_per_team = {}
 
     def __repr__(self):
         return f"<LineUp sportingEvent={self.sporting_event}>"

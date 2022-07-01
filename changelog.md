@@ -1,3 +1,8 @@
+## 0.9.1 (2022-07-01)
+
+Bugfix:
+- Don't break when backend sends an empty list instead of a empty dictionary
+
 ## 0.9.0 (2022-07-01)
 
 Feature:
