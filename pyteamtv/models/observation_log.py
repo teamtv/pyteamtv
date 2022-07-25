@@ -1,4 +1,4 @@
-from typing import Type, Set, TYPE_CHECKING
+from typing import Type, TYPE_CHECKING
 import math
 
 if TYPE_CHECKING:

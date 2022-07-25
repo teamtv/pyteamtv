@@ -18,14 +18,13 @@ class LineUp(TeamTVObject):
     def sporting_event(self):
         return self._sporting_event
 
-    def sync_players(self, team: 'Team', positions: Dict['Person', Position]):
+    def sync_players(self, team: "Team", positions: Dict["Person", Position]):
         # Make sure we only sync when things changed
         person_id_positions = {
-            person.person_id: position
-            for person, position in positions.items()
+            person.person_id: position for person, position in positions.items()
         }
         current_person_id_positions = {
-            player['personId']: player['position']
+            player["personId"]: player["position"]
             for player in self._roles_per_team.get(team.team_id, [])
         }
 
@@ -33,23 +32,21 @@ class LineUp(TeamTVObject):
             self._requester.request(
                 "POST",
                 f"/lineUps/{self.line_up_id}/resetTeamLineUp",
-                {
-                    'teamId': team.team_id
-                }
+                {"teamId": team.team_id},
             )
             for person_id, position in person_id_positions.items():
                 self._requester.request(
                     "POST",
                     f"/lineUps/{self.line_up_id}/addPlayer",
                     {
-                        'teamId': team.team_id,
-                        'personId': person_id,
-                        'position': position
-                    }
+                        "teamId": team.team_id,
+                        "personId": person_id,
+                        "position": position,
+                    },
                 )
 
     def _use_attributes(self, attributes: dict):
-        self._sporting_event = attributes['sportingEvent']
+        self._sporting_event = attributes["sportingEvent"]
         self._line_up_id = attributes["lineUpId"]
         self._roles_per_team = attributes["rolesPerTeam"]
         if not isinstance(self._roles_per_team, dict):

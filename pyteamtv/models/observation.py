@@ -1,3 +1,5 @@
+from typing import TypedDict, Union
+
 from .teamtv_object import TeamTVObject
 
 
@@ -43,3 +45,12 @@ class Observation(TeamTVObject):
         self._attributes = attributes["attributes"] or dict()
         self._description = attributes["description"]
         self._clock_id = attributes["clockId"]
+
+
+class DictObservation(TypedDict):
+    startTime: Union[str, float]
+    triggerTime: Union[str, float]
+    endTime: Union[str, float]
+    code: str
+    description: str
+    attributes: dict

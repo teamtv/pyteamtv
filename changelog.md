@@ -1,3 +1,8 @@
+## 0.10.0 (2022-07-25)
+
+Feature:
+- Add bulk observation
+
 ## 0.9.1 (2022-07-01)
 
 Bugfix:

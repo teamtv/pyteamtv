@@ -6,7 +6,7 @@ from typing import Optional, Union
 from .event_stream import EventStream
 from .line_up import LineUp
 from .list import List
-from .observation import Observation
+from .observation import Observation, DictObservation
 from .observation_log import ObservationLog
 from .teamtv_object import TeamTVObject
 from .video import Video
@@ -145,6 +145,24 @@ class SportingEvent(TeamTVObject):
             self,
         )
 
+    def add_bulk_observation(
+        self, observations: List[DictObservation], description: Optional[str] = None
+    ):
+        video_id = self.main_video_id
+        if video_id:
+            clock_id = self._clocks[video_id]["clockId"]
+        else:
+            clock_id = "U1"
+
+        path = (
+            f"/sportingEvents/{self.sporting_event_id}/"
+            f"observations/{clock_id}/addBulkObservation"
+        )
+
+        self._requester.request(
+            "POST", path, {"observations": observations, "description": description}
+        )
+
     def get_videos(self) -> List[Video]:
         def _filter(video: Video) -> bool:
             return video.video_id in self._video_ids
@@ -176,15 +194,9 @@ class SportingEvent(TeamTVObject):
         )
 
     def get_line_up(self) -> LineUp:
-        data = self._requester.request(
-                "GET",
-                f"/lineUps/{self.line_up_id}"
-            )
-        data['sportingEvent'] = self
-        return LineUp(
-            self._requester,
-            data
-        )
+        data = self._requester.request("GET", f"/lineUps/{self.line_up_id}")
+        data["sportingEvent"] = self
+        return LineUp(self._requester, data)
 
     def upload_video(
         self,
