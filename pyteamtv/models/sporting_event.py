@@ -130,7 +130,9 @@ class SportingEvent(TeamTVObject):
             {"sportingEventId": self.sporting_event_id, **self._clocks[id_]},
         )
 
-    def get_observation_log(self, video_id: str = None, clock_id: str = None) -> ObservationLog:
+    def get_observation_log(
+        self, video_id: str = None, clock_id: str = None
+    ) -> ObservationLog:
         if not clock_id:
             if not video_id:
                 video_id = self.main_video_id
@@ -182,7 +184,9 @@ class SportingEvent(TeamTVObject):
         )
         self._requester.request("DELETE", path)
 
-    def upsert_bulk_observations(self, observations: List[DictObservation], description: str):
+    def upsert_bulk_observations(
+        self, observations: List[DictObservation], description: str
+    ):
         bulk_observations = self.get_bulk_observations()
         for bulk_observation in bulk_observations:
             if bulk_observation.description == description:

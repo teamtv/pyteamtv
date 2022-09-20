@@ -15,13 +15,12 @@ def main():
     team = api.get_team(team_name)
 
     sporting_event = team.get_sporting_event(sporting_event_id)
-    video = sporting_event.get_videos_by_tags(output_key='switched')[0]
+    video = sporting_event.get_videos_by_tags(output_key="switched")[0]
 
     observation_log = sporting_event.get_observation_log(video_id=video.video_id)
-    df = observation_log.to_pandas().to_dict(orient='records')
+    df = observation_log.to_pandas().to_dict(orient="records")
     print(df)
 
 
 if __name__ == "__main__":
     main()
-

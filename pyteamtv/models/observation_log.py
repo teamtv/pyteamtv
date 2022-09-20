@@ -47,7 +47,7 @@ class ObservationLog(List[Observation]):
                 stats["failed"] += 1
         return stats
 
-    def to_pandas(self) -> 'pd.DataFrame':
+    def to_pandas(self) -> "pd.DataFrame":
         try:
             import pandas as pd
         except ImportError:
