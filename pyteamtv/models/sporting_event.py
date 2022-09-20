@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from typing import Optional, Union
 
+from .bulk_observation import BulkObservation
 from .event_stream import EventStream
 from .line_up import LineUp
 from .list import List
@@ -129,12 +130,15 @@ class SportingEvent(TeamTVObject):
             {"sportingEventId": self.sporting_event_id, **self._clocks[id_]},
         )
 
-    def get_observation_log(self) -> ObservationLog:
-        video_id = self.main_video_id
-        if video_id:
-            clock_id = self._clocks[video_id]["clockId"]
-        else:
-            clock_id = "U1"
+    def get_observation_log(self, video_id: str = None, clock_id: str = None) -> ObservationLog:
+        if not clock_id:
+            if not video_id:
+                video_id = self.main_video_id
+
+            if video_id:
+                clock_id = self._clocks[video_id]["clockId"]
+            else:
+                clock_id = "U1"
 
         return ObservationLog(
             Observation,
@@ -162,6 +166,30 @@ class SportingEvent(TeamTVObject):
         self._requester.request(
             "POST", path, {"observations": observations, "description": description}
         )
+
+    def get_bulk_observations(self) -> List[BulkObservation]:
+        return List(
+            BulkObservation,
+            self._requester,
+            "GET",
+            f"/sportingEvents/{self.sporting_event_id}/bulkObservations",
+        )
+
+    def delete_bulk_observation(self, bulk_observation_id):
+        path = (
+            f"/sportingEvents/{self.sporting_event_id}/"
+            f"bulkObservations/{bulk_observation_id}"
+        )
+        self._requester.request("DELETE", path)
+
+    def upsert_bulk_observations(self, observations: List[DictObservation], description: str):
+        bulk_observations = self.get_bulk_observations()
+        for bulk_observation in bulk_observations:
+            if bulk_observation.description == description:
+                self.delete_bulk_observation(bulk_observation.bulk_observation_id)
+                break
+
+        self.add_bulk_observation(observations, description)
 
     def get_videos(self) -> List[Video]:
         def _filter(video: Video) -> bool:

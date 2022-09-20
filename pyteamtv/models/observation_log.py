@@ -4,6 +4,8 @@ import math
 if TYPE_CHECKING:
     from pyteamtv.models.sporting_event import SportingEvent
 
+    import pandas as pd
+
 from pyteamtv.infra.requester import Requester
 from pyteamtv.models.list import List
 from pyteamtv.models.observation import Observation
@@ -45,7 +47,7 @@ class ObservationLog(List[Observation]):
                 stats["failed"] += 1
         return stats
 
-    def to_pandas(self):
+    def to_pandas(self) -> 'pd.DataFrame':
         try:
             import pandas as pd
         except ImportError:
@@ -69,7 +71,7 @@ class ObservationLog(List[Observation]):
                     team_id=observation.attributes["teamId"],
                     team_name=observation.attributes["team"]["name"],
                     team_ground=observation.attributes["team"]["ground"],
-                    position=observation.attributes["position"],
+                    position=observation.attributes.get("position"),
                 )
             else:
                 if "person" in observation.attributes:

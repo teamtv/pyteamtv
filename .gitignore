@@ -3,7 +3,7 @@
 .env
 .*
 *pycache*
-examples
+examples_private
 build
 dist
 *.egg*

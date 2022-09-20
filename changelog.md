@@ -1,3 +1,9 @@
+
+## 0.11.0 (2022-09-20)
+
+Feature:
+- Allow video_id and clock_id to be passed for to get_observation_log 
+
 ## 0.10.0 (2022-07-25)
 
 Feature:
