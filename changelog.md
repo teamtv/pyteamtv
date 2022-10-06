@@ -1,3 +1,7 @@
+## 0.11.1 (2022-10-06)
+
+Bugfix:
+- Handle 'POSSESSION' events correctly
 
 ## 0.11.0 (2022-09-20)
 

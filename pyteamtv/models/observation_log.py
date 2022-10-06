@@ -66,7 +66,7 @@ class ObservationLog(List[Observation]):
         }
         team = dict()
         for observation in self:
-            if observation.code == "START-POSSESSION":
+            if observation.code in ("START-POSSESSION", "POSSESSION"):
                 team = dict(
                     team_id=observation.attributes["teamId"],
                     team_name=observation.attributes["team"]["name"],
