@@ -1,4 +1,5 @@
-## 0.12.0 (2022-10-12)
+
+## 0.12.0/0.12.1 (2022-10-12)
 
 Feature:
 - Provide team information from sporting event 

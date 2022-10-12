@@ -67,10 +67,15 @@ class ObservationLog(List[Observation]):
         team = dict()
         for observation in self:
             if observation.code in ("START-POSSESSION", "POSSESSION"):
+                if "team" in observation.attributes:
+                    team_data = observation.attributes["team"]
+                else:
+                    team_data = self._sporting_event.get_team(observation.attributes["teamId"])
+
                 team = dict(
                     team_id=observation.attributes["teamId"],
-                    team_name=observation.attributes["team"]["name"],
-                    team_ground=observation.attributes["team"]["ground"],
+                    team_name=team_data["name"],
+                    team_ground=observation["ground"],
                     position=observation.attributes.get("position"),
                 )
             else:
