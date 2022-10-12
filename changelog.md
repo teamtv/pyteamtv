@@ -1,4 +1,9 @@
 
+## 0.13.1 (2022-10-12)
+
+Bugfix:
+- Fix in dataframe builder
+
 ## 0.13.0 (2022-10-12)
 
 *Breaking release*

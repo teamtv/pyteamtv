@@ -119,4 +119,4 @@ class DataframeBuilder:
 
                     observations.append(observation_dict)
 
-            return observations
+        return observations
