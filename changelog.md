@@ -1,3 +1,8 @@
+## 0.12.0 (2022-10-12)
+
+Feature:
+- Provide team information from sporting event 
+
 ## 0.11.1 (2022-10-06)
 
 Bugfix:
