@@ -1,4 +1,12 @@
 
+## 0.13.0 (2022-10-12)
+
+*Breaking release*
+`ObservationLog.to_pandas` is removed.
+
+Feature:
+- Add data frame builder
+
 ## 0.12.0/0.12.1 (2022-10-12)
 
 Feature:

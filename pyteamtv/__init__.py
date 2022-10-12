@@ -15,4 +15,4 @@ if not __PYTEAMTV_SETUP__:
             return app.get_team(name=name, resource_group_id=resource_group_id)
 
 
-__version__ = "0.12.1"
+__version__ = "0.13.0"

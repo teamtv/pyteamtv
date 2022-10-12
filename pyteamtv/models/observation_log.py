@@ -38,6 +38,10 @@ class ObservationLog(List[Observation]):
         self._clock_id = clock_id
         self._sporting_event = sporting_event
 
+    @property
+    def sporting_event(self):
+        return self._sporting_event
+
     def get_mapping_stats(self):
         stats = dict(success=0, failed=0)
         for observation in self:
@@ -47,76 +51,3 @@ class ObservationLog(List[Observation]):
                 stats["failed"] += 1
         return stats
 
-    def to_pandas(self) -> "pd.DataFrame":
-        try:
-            import pandas as pd
-        except ImportError:
-            raise Exception("You don't have pandas installed. Please install first")
-
-        observations = []
-        skip_attributes = {
-            "teamId",
-            "personId",
-            "team",
-            "person",
-            "inPerson",
-            "inPersonId",
-            "outPerson",
-            "outPersonId",
-        }
-        team = dict()
-        for observation in self:
-            if observation.code in ("START-POSSESSION", "POSSESSION"):
-                if "team" in observation.attributes:
-                    team_data = observation.attributes["team"]
-                else:
-                    team_data = self._sporting_event.get_team(observation.attributes["teamId"])
-
-                team = dict(
-                    team_id=observation.attributes["teamId"],
-                    team_name=team_data["name"],
-                    team_ground=observation["ground"],
-                    position=observation.attributes.get("position"),
-                )
-            else:
-                if "person" in observation.attributes:
-                    person = dict(
-                        person_id=observation.attributes["personId"],
-                        first_name=observation.attributes["person"]["firstName"],
-                        last_name=observation.attributes["person"]["lastName"],
-                        number=observation.attributes["person"]["number"],
-                    )
-                    person["full_name"] = (
-                        person["first_name"] + " " + person["last_name"]
-                    )
-                else:
-                    person = dict()
-
-                attributes = dict()
-                attributes.update(team)
-                attributes.update(person)
-                for k, v in observation.attributes.items():
-                    if k not in skip_attributes:
-                        attributes[k] = v
-
-                if "angle" in attributes and "distance" in attributes:
-                    attributes["x"], attributes["y"] = pol2cart(
-                        attributes["angle"], attributes["distance"]
-                    )
-
-                observation_dict = dict(
-                    sporting_event_id=self._sporting_event.sporting_event_id,
-                    sporting_event_name=self._sporting_event.name,
-                    sporting_event_scheduled_at=self._sporting_event.scheduled_at,
-                    observation_id=observation.observation_id,
-                    clock_id=observation.clock_id,
-                    start_time=observation.start_time,
-                    end_time=observation.end_time,
-                    code=observation.code,
-                    description=observation.description,
-                    **attributes
-                )
-
-                observations.append(observation_dict)
-
-        return pd.DataFrame.from_records(observations)

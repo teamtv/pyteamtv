@@ -122,7 +122,7 @@ class SportingEvent(TeamTVObject):
 
     @property
     def away_team_id(self):
-        return self.away_team_id
+        return self._away_team_id
 
     def get_clock(self, id_: str) -> Optional[Clock]:
         if id_ not in self._clocks:
