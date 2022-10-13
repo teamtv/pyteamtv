@@ -48,13 +48,17 @@ class TeamTVUser(object):
             membership = membership_list.get_membership_by_resource_group_id(
                 resource_group_id
             )
+
+            if not membership:
+                raise TeamNotFound(f"No team named '{name}' found.")
         elif name:
             membership = membership_list.get_membership_by_name(name=name)
+
+            if not membership:
+                raise TeamNotFound(f"No team named '{name}' found.")
         else:
             raise InputError(f"Either `name` or `resource_group_id` must be specified.")
 
-        if not membership:
-            raise TeamNotFound(f"No team named '{name}' found.")
         return membership.resource_group
 
     def get_memberships(
