@@ -1,8 +1,22 @@
+import math
 from typing import List, Optional
 
 from pyteamtv.models.observation_log import ObservationLog
 from pyteamtv.models.person import Person
 from pyteamtv.models.resource_group.team import TeamResourceGroup
+
+
+def pol2cart(angle: float, distance: float):
+    if angle > 90:
+        angle -= 360
+    angle += 90
+
+    phi = (angle / 360) * 2 * math.pi
+    rho = distance
+
+    x = rho * math.cos(phi)
+    y = rho * math.sin(phi)
+    return x, y
 
 
 class DataframeBuilder:

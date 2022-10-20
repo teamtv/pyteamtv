@@ -13,6 +13,8 @@ if not __PYTEAMTV_SETUP__:
         if "TEAMTV_API_TOKEN" in os.environ:
             app = TeamTVUser(os.environ["TEAMTV_API_TOKEN"])
             return app.get_team(name=name, resource_group_id=resource_group_id)
+        else:
+            raise Exception("'TEAMTV_API_TOKEN' environment variable is not set.")
 
 
-__version__ = "0.13.1"
+__version__ = "0.13.2"
