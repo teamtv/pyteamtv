@@ -3,6 +3,7 @@
 
 Bugfix:
 - Add missing pol2cart function
+- Improve exception when TOKEN is not set
 
 ## 0.13.1 (2022-10-12)
 
