@@ -50,7 +50,7 @@ class TeamTVUser(object):
             )
 
             if not membership:
-                raise TeamNotFound(f"No team named '{name}' found.")
+                raise TeamNotFound(f"No team with resource group id '{resource_group_id}' found.")
         elif name:
             membership = membership_list.get_membership_by_name(name=name)
 
