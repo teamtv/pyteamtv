@@ -1,4 +1,9 @@
 
+## 0.13.2 (2022-10-20)
+
+Bugfix:
+- Add missing pol2cart function
+
 ## 0.13.1 (2022-10-12)
 
 Bugfix:
