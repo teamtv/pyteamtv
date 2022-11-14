@@ -33,3 +33,5 @@ class SharingGroup(TeamTVObject):
         self._tenant_id = attributes["tenantId"]
         self._sharing_group_id = attributes["sharingGroupId"]
         self._attributes = attributes["attributes"]
+
+        super()._use_attributes(attributes)

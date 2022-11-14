@@ -16,3 +16,5 @@ class EventStream(TeamTVObject):
     def _use_attributes(self, attributes: dict):
         self._event_stream_id = attributes["eventStreamId"]
         self._endpoint_urls = attributes["endpointUrls"]
+
+        super()._use_attributes(attributes)

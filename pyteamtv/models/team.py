@@ -31,6 +31,8 @@ class Team(TeamTVObject):
         self._sport_type = attributes["sportType"]
         self._tags = tags
 
+        super()._use_attributes(attributes)
+
     def __repr__(self):
         return f"<Team name={self.name} team_id={self.team_id}>"
 

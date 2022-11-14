@@ -26,3 +26,5 @@ class BulkObservation(TeamTVObject):
         self._created = datetime.fromisoformat(
             attributes["created"].replace("Z", "+00:00")
         )
+
+        super()._use_attributes(attributes)

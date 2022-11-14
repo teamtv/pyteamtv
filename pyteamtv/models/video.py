@@ -31,3 +31,5 @@ class Video(TeamTVObject):
         self._media_url = attributes.get("mediaUrl")
         self._state = attributes["state"]
         self._tags = attributes.get("tags", {})
+
+        super()._use_attributes(attributes)

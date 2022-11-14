@@ -81,6 +81,8 @@ class Clock(TeamTVObject):
             for synchronization_point in attributes["synchronizationPoints"]
         ]
 
+        super()._use_attributes(attributes)
+
     def __repr__(self):
         return f"<Clock id={self._clock_id} synchronization_points={self._synchronization_points}>"
 
@@ -314,6 +316,8 @@ class SportingEvent(TeamTVObject):
         self._is_local = attributes["_metadata"]["source"]["type"] == "ResourceGroup"
         self._home_team_id = attributes['homeTeamId']
         self._away_team_id = attributes['awayTeamId']
+
+        super()._use_attributes(attributes)
 
     def __str__(self):
         return f"{self._scheduled_at.strftime('%d/%m/%y')} {self._name}"

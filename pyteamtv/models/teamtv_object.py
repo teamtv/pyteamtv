@@ -8,5 +8,9 @@ class TeamTVObject(object):
 
         self._use_attributes(attributes)
 
+    @property
+    def metadata(self):
+        return self._metadata
+
     def _use_attributes(self, attributes: dict):
-        pass
+        self._metadata = attributes.get('_metadata', {})

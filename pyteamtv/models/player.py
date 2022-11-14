@@ -20,5 +20,7 @@ class Player(TeamTVObject):
         self._number = attributes["number"]
         self._team = attributes["team"]
 
+        super()._use_attributes(attributes)
+        
     def __repr__(self):
         return f"<Player name='{self.person.name}' team='{self.team.name}'>"

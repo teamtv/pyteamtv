@@ -1,3 +1,7 @@
+## 0.14.0 (2022-11-14)
+
+Feature:
+- Populate resource metadata when available
 
 ## 0.13.2 (2022-10-20)
 

@@ -46,6 +46,8 @@ class Observation(TeamTVObject):
         self._description = attributes["description"]
         self._clock_id = attributes["clockId"]
 
+        super()._use_attributes(attributes)
+
 
 class DictObservation(TypedDict):
     startTime: Union[str, float]

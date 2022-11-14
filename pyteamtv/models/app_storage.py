@@ -31,3 +31,5 @@ class AppStorageTokens(TeamTVObject):
             bucket=attributes["storage"]["bucket"],
             base_key=attributes["storage"]["baseKey"],
         )
+
+        super()._use_attributes(attributes)

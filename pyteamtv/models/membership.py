@@ -29,5 +29,7 @@ class Membership(TeamTVObject):
             ),
         )
 
+        super()._use_attributes(attributes)
+
     def __repr__(self):
         return f"<Membership resourceGroup={self.resource_group} role={self.role_names[0]}>"

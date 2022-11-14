@@ -39,5 +39,7 @@ class Person(TeamTVObject):
         self._gender = attributes["gender"]
         self._tags = attributes.get("tags", {})
 
+        super()._use_attributes(attributes)
+
     def __repr__(self):
         return f"<Person name='{self.name}' person_id={self.person_id}>"

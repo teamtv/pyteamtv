@@ -54,3 +54,5 @@ class Exercise(TeamTVObject):
         self._title = attributes["title"]
         self._video_id = attributes.get("videoId")
         self._tags = attributes.get("tags", {})
+
+        super()._use_attributes(attributes)
