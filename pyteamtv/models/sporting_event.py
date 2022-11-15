@@ -164,23 +164,11 @@ class SportingEvent(TeamTVObject):
     def get_team(self, team_id: str) -> dict:
         home_team_name, away_team_name = self.name.split(" - ")
         if team_id == self.home_team_id:
-            return {
-                'name': home_team_name,
-                'teamId': team_id,
-                'ground': 'home'
-            }
+            return {"name": home_team_name, "teamId": team_id, "ground": "home"}
         elif team_id == self.away_team_id:
-            return {
-                'name': away_team_name,
-                'teamId': team_id,
-                'ground': 'away'
-            }
+            return {"name": away_team_name, "teamId": team_id, "ground": "away"}
         else:
-            return {
-                'name': None,
-                'teamId': None,
-                'ground': None
-            }
+            return {"name": None, "teamId": None, "ground": None}
 
     def add_bulk_observation(
         self, observations: List[DictObservation], description: Optional[str] = None
@@ -314,8 +302,8 @@ class SportingEvent(TeamTVObject):
             attributes["scheduledAt"].replace("Z", "+00:00")
         )
         self._is_local = attributes["_metadata"]["source"]["type"] == "ResourceGroup"
-        self._home_team_id = attributes['homeTeamId']
-        self._away_team_id = attributes['awayTeamId']
+        self._home_team_id = attributes["homeTeamId"]
+        self._away_team_id = attributes["awayTeamId"]
 
         super()._use_attributes(attributes)
 

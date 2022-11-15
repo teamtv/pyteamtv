@@ -13,4 +13,4 @@ class TeamTVObject(object):
         return self._metadata
 
     def _use_attributes(self, attributes: dict):
-        self._metadata = attributes.get('_metadata', {})
+        self._metadata = attributes.get("_metadata", {})

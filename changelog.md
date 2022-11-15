@@ -1,3 +1,8 @@
+## 0.15.0 (2022-11-15)
+
+Feature:
+- Add cache layer
+
 ## 0.14.0 (2022-11-14)
 
 Feature:

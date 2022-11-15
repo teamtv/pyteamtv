@@ -34,4 +34,3 @@ class ObservationLog(List[Observation]):
             else:
                 stats["failed"] += 1
         return stats
-

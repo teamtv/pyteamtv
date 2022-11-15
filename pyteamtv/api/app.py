@@ -8,14 +8,16 @@ from .token import TOKEN
 
 
 class TeamTVApp(object):
-    def __init__(self, jwt_token, app_id: str):
+    def __init__(self, jwt_token, app_id: str, use_cache: bool = False):
         self.jwt_token = jwt_token
 
         token = jwt.decode(
             jwt_token, TOKEN, algorithms="RS256", verify=True, audience=f"app:{app_id}"
         )
 
-        self._requester = Requester(f"{API_ENDPOINT}/api", jwt_token)
+        self._requester = Requester(
+            f"{API_ENDPOINT}/api", jwt_token, use_cache=use_cache
+        )
         self.__token = token
 
     def get_resource_group(self):

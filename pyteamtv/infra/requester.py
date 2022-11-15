@@ -8,10 +8,24 @@ logger = logging.getLogger(__name__)
 
 
 class Requester(object):
-    def __init__(self, base_url, jwt_token, headers: dict = None):
+    def __init__(
+        self, base_url, jwt_token, headers: dict = None, use_cache: bool = False
+    ):
         self._base_url = base_url
         self.jwt_token = jwt_token
         self.headers = dict(**headers) if headers else {}
+        self.use_cache = use_cache
+        if use_cache:
+            import requests_cache
+            import hashlib
+            from datetime import timedelta
+
+            self.session = requests_cache.CachedSession(
+                hashlib.md5(self.jwt_token.encode("ascii")).hexdigest(),
+                expire_after=timedelta(days=1),
+            )
+        else:
+            self.session = requests.Session()
 
     def request(self, method, url, input_=None):
         import pyteamtv
@@ -21,7 +35,7 @@ class Requester(object):
         headers["Authorization"] = f"Bearer {self.jwt_token}"
         headers["User-Agent"] = f"pyteamtv {pyteamtv.__version__}"
         logger.debug(f"Sending {method} request to {url} - {self.headers}")
-        response = requests.request(
+        response = self.session.request(
             method, self._base_url + url, headers=headers, json=input_
         )
         took = time.time() - start
@@ -34,4 +48,9 @@ class Requester(object):
     def with_extra_headers(self, headers: dict):
         new_headers = dict(**self.headers)
         new_headers.update(headers)
-        return self.__class__(self._base_url, self.jwt_token, headers)
+        return self.__class__(
+            self._base_url,
+            jwt_token=self.jwt_token,
+            headers=new_headers,
+            use_cache=self.use_cache,
+        )

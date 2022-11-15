@@ -15,7 +15,7 @@ from ..models.resource_group.team import TeamResourceGroup
 
 
 class TeamTVUser(object):
-    def __init__(self, jwt_token):
+    def __init__(self, jwt_token, use_cache: bool = False):
         self.jwt_token = jwt_token
 
         token = jwt.decode(
@@ -26,7 +26,9 @@ class TeamTVUser(object):
             options={"verify_signature": False},
         )
 
-        self._requester = Requester(f"{API_ENDPOINT}/api", jwt_token)
+        self._requester = Requester(
+            f"{API_ENDPOINT}/api", jwt_token, use_cache=use_cache
+        )
         self.__token = token
 
     def get_membership_list(self):
@@ -50,7 +52,9 @@ class TeamTVUser(object):
             )
 
             if not membership:
-                raise TeamNotFound(f"No team with resource group id '{resource_group_id}' found.")
+                raise TeamNotFound(
+                    f"No team with resource group id '{resource_group_id}' found."
+                )
         elif name:
             membership = membership_list.get_membership_by_name(name=name)
 

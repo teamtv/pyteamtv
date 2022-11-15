@@ -36,9 +36,7 @@ class DataframeBuilder:
 
         return pd.DataFrame.from_records(self.build_records(observation_logs))
 
-    def _build_person_data(self,
-                           attributes: dict,
-                           key_prefix: Optional[str] = None):
+    def _build_person_data(self, attributes: dict, key_prefix: Optional[str] = None):
         in_key = "person"
         out_prefix = ""
         if key_prefix:
@@ -53,7 +51,9 @@ class DataframeBuilder:
                 f"{out_prefix}first_name": attributes["person"]["firstName"],
                 f"{out_prefix}last_name": attributes["person"]["lastName"],
                 f"{out_prefix}number": attributes["person"]["number"],
-                f"{out_prefix}full_name": attributes["person"]["firstName"] + " " + attributes["person"]["lastName"]
+                f"{out_prefix}full_name": attributes["person"]["firstName"]
+                + " "
+                + attributes["person"]["lastName"],
             }
         elif pk_name in attributes:
             person_: Optional[Person] = self.persons.get(attributes[pk_name])
@@ -62,7 +62,7 @@ class DataframeBuilder:
                     f"{out_prefix}person_id": attributes[pk_name],
                     f"{out_prefix}first_name": person_.first_name,
                     f"{out_prefix}last_name": person_.last_name,
-                    f"{out_prefix}full_name": person_.name
+                    f"{out_prefix}full_name": person_.name,
                 }
             else:
                 person = dict()
@@ -93,7 +93,9 @@ class DataframeBuilder:
                     if "team" in observation.attributes:
                         team_data = observation.attributes["team"]
                     else:
-                        team_data = sporting_event.get_team(observation.attributes["teamId"])
+                        team_data = sporting_event.get_team(
+                            observation.attributes["teamId"]
+                        )
 
                     team = dict(
                         team_id=observation.attributes["teamId"],
@@ -103,7 +105,9 @@ class DataframeBuilder:
                     )
                 else:
                     person = self._build_person_data(observation.attributes)
-                    opponent_person = self._build_person_data(observation.attributes, "opponent")
+                    opponent_person = self._build_person_data(
+                        observation.attributes, "opponent"
+                    )
 
                     attributes = dict()
                     attributes.update(team)
@@ -128,7 +132,7 @@ class DataframeBuilder:
                         end_time=observation.end_time,
                         code=observation.code,
                         description=observation.description,
-                        **attributes
+                        **attributes,
                     )
 
                     observations.append(observation_dict)

@@ -42,6 +42,7 @@ def setup_package():
         ],
         extras_require={
             "test": ["pytest", "pandas>=1.0.0"],
+            "cache": ["requests-cache>=0.9.7"],
         },
     )
 

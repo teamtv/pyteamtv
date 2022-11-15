@@ -80,13 +80,16 @@ class App:
 
 
 def _get_current_app(
-    app_id: Optional[str], session: MutableMapping, token: Optional[str]
+    app_id: Optional[str],
+    session: MutableMapping,
+    token: Optional[str],
+    use_cache: bool = False,
 ) -> App:
     current_app: Optional[App] = session.get("current_app")
 
     if not current_app or current_app.should_refresh(token):
         if "TEAMTV_TOKEN" in os.environ:
-            api = TeamTVUser(jwt_token=os.environ["TEAMTV_TOKEN"])
+            api = TeamTVUser(jwt_token=os.environ["TEAMTV_TOKEN"], use_cache=use_cache)
         else:
             if not app_id:
                 app_id = os.environ.get("TEAMTV_APP_ID")
