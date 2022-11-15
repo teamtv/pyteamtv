@@ -1,3 +1,8 @@
+## 0.15.1 (2022-11-15)
+
+Bugfix:
+- Add caching for apps
+
 ## 0.15.0 (2022-11-15)
 
 Feature:

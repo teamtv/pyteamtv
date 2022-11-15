@@ -97,7 +97,7 @@ def _get_current_app(
                     raise Exception("app_id must be set")
 
             if token:
-                api = TeamTVApp(jwt_token=token, app_id=app_id)
+                api = TeamTVApp(jwt_token=token, app_id=app_id, use_cache=use_cache)
             else:
                 raise Exception("Token not set")
 
