@@ -1,4 +1,5 @@
 import time
+from copy import copy
 
 import requests
 import logging
@@ -15,17 +16,29 @@ class Requester(object):
         self.jwt_token = jwt_token
         self.headers = dict(**headers) if headers else {}
         self.use_cache = use_cache
-        if use_cache:
-            import requests_cache
-            import hashlib
-            from datetime import timedelta
+        self._session = None
 
-            self.session = requests_cache.CachedSession(
-                hashlib.md5(self.jwt_token.encode("ascii")).hexdigest(),
-                expire_after=timedelta(days=1),
-            )
-        else:
-            self.session = requests.Session()
+    @property
+    def session(self):
+        if not self._session:
+            if self.use_cache:
+                import requests_cache
+                import hashlib
+                from datetime import timedelta
+
+                self._session = requests_cache.CachedSession(
+                    hashlib.md5(self.jwt_token.encode("ascii")).hexdigest(),
+                    expire_after=timedelta(days=1),
+                )
+            else:
+                self._session = requests.Session()
+
+        return self._session
+
+    def __getstate__(self):
+        d = copy(self.__dict__)
+        del d['_session']
+        return d
 
     def request(self, method, url, input_=None):
         import pyteamtv

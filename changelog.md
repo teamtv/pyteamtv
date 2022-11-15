@@ -1,3 +1,8 @@
+## 0.15.2 (2022-11-15)
+
+Bugfix:
+- Make Api pickleable
+
 ## 0.15.1 (2022-11-15)
 
 Bugfix:
