@@ -22,6 +22,10 @@ class Video(TeamTVObject):
     def tags(self):
         return self._tags
 
+    @property
+    def skip_transcoding(self):
+        return self._skip_transcoding
+
     def __repr__(self):
         return f"<Video video_id={self.video_id} state={self.state}>"
 
@@ -31,5 +35,6 @@ class Video(TeamTVObject):
         self._media_url = attributes.get("mediaUrl")
         self._state = attributes["state"]
         self._tags = attributes.get("tags", {})
+        self._skip_transcoding = attributes.get("skipTranscoding", False)
 
         super()._use_attributes(attributes)

@@ -14,6 +14,8 @@ from .video import Video
 
 from tusclient.uploader import Uploader
 
+from ..infra.requester import Requester
+
 
 class Clock(TeamTVObject):
     @property
@@ -88,6 +90,12 @@ class Clock(TeamTVObject):
 
 
 class SportingEvent(TeamTVObject):
+    def __new__(cls, requester: Requester, attributes: dict):
+        if attributes["type"] == "match":
+            return super().__new__(MatchSportingEvent)
+        else:
+            return super().__new__(cls)
+
     @property
     def scheduled_at(self) -> datetime:
         return self._scheduled_at
@@ -105,10 +113,6 @@ class SportingEvent(TeamTVObject):
         return self._tags
 
     @property
-    def line_up_id(self):
-        return self._line_up_id
-
-    @property
     def main_video_id(self) -> Optional[str]:
         if self._video_ids:
             return self._video_ids[0]
@@ -117,14 +121,6 @@ class SportingEvent(TeamTVObject):
     @property
     def is_local(self):
         return self._is_local
-
-    @property
-    def home_team_id(self):
-        return self._home_team_id
-
-    @property
-    def away_team_id(self):
-        return self._away_team_id
 
     def get_clock(self, id_: str) -> Optional[Clock]:
         if id_ not in self._clocks:
@@ -160,15 +156,6 @@ class SportingEvent(TeamTVObject):
             clock_id,
             self,
         )
-
-    def get_team(self, team_id: str) -> dict:
-        home_team_name, away_team_name = self.name.split(" - ")
-        if team_id == self.home_team_id:
-            return {"name": home_team_name, "teamId": team_id, "ground": "home"}
-        elif team_id == self.away_team_id:
-            return {"name": away_team_name, "teamId": team_id, "ground": "away"}
-        else:
-            return {"name": None, "teamId": None, "ground": None}
 
     def add_bulk_observation(
         self, observations: List[DictObservation], description: Optional[str] = None
@@ -244,17 +231,13 @@ class SportingEvent(TeamTVObject):
             ),
         )
 
-    def get_line_up(self) -> LineUp:
-        data = self._requester.request("GET", f"/lineUps/{self.line_up_id}")
-        data["sportingEvent"] = self
-        return LineUp(self._requester, data)
-
     def upload_video(
         self,
         *file_paths: str,
         chunks_per_request: int = 1,
         tags: Optional[dict] = None,
         description: Optional[str] = None,
+        skip_transcoding: Optional[bool] = False,
     ) -> Video:
         chunks_per_request = int(chunks_per_request)
         if chunks_per_request < 1:
@@ -269,7 +252,12 @@ class SportingEvent(TeamTVObject):
         video_id = self._requester.request(
             "POST",
             f"/sportingEvents/{self.sporting_event_id}/initVideoUpload",
-            {"files": files, "tags": tags or {}, "description": description},
+            {
+                "files": files,
+                "tags": tags or {},
+                "description": description,
+                "skipTranscoding": skip_transcoding,
+            },
         )
 
         video = Video(
@@ -297,15 +285,47 @@ class SportingEvent(TeamTVObject):
         self._tags = attributes.get("tags", {})
         self._video_ids = attributes.get("videoIds", [])
         self._clocks = attributes["clocks"]
-        self._line_up_id = attributes["lineUpId"]
         self._scheduled_at = datetime.fromisoformat(
             attributes["scheduledAt"].replace("Z", "+00:00")
         )
         self._is_local = attributes["_metadata"]["source"]["type"] == "ResourceGroup"
-        self._home_team_id = attributes["homeTeamId"]
-        self._away_team_id = attributes["awayTeamId"]
 
         super()._use_attributes(attributes)
 
     def __str__(self):
         return f"{self._scheduled_at.strftime('%d/%m/%y')} {self._name}"
+
+
+class MatchSportingEvent(SportingEvent):
+    @property
+    def home_team_id(self):
+        return self._home_team_id
+
+    @property
+    def away_team_id(self):
+        return self._away_team_id
+
+    @property
+    def line_up_id(self):
+        return self._line_up_id
+
+    def _use_attributes(self, attributes: dict):
+        self._line_up_id = attributes["lineUpId"]
+        self._home_team_id = attributes["homeTeamId"]
+        self._away_team_id = attributes["awayTeamId"]
+
+        super()._use_attributes(attributes)
+
+    def get_team(self, team_id: str) -> dict:
+        home_team_name, away_team_name = self.name.split(" - ")
+        if team_id == self.home_team_id:
+            return {"name": home_team_name, "teamId": team_id, "ground": "home"}
+        elif team_id == self.away_team_id:
+            return {"name": away_team_name, "teamId": team_id, "ground": "away"}
+        else:
+            return {"name": None, "teamId": None, "ground": None}
+
+    def get_line_up(self) -> LineUp:
+        data = self._requester.request("GET", f"/lineUps/{self.line_up_id}")
+        data["sportingEvent"] = self
+        return LineUp(self._requester, data)

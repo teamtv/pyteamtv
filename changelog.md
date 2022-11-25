@@ -1,3 +1,11 @@
+## 0.16.0 (2022-11-25)
+
+Bugfix:
+- Accept training SportingEvent type
+
+Feature:
+- Make it possible to pass skipTranscoding parameter
+
 ## 0.15.2 (2022-11-15)
 
 Bugfix:

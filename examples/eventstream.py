@@ -25,12 +25,12 @@ def main():
     else:
         event_stream = event_streams[0]
 
-    sse_url = event_stream.endpoint_urls['sse']
+    sse_url = event_stream.endpoint_urls["sse"]
 
     # Listen for all new events. Now start live tagging in TeamTV
     messages = sseclient.SSEClient(sse_url)
     for message in messages:
-        if message.event == 'message':
+        if message.event == "message":
             # Keep-Alive event
             continue
 

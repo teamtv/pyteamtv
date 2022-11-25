@@ -19,9 +19,7 @@ def main():
 
     sporting_event = team.get_sporting_event(sporting_event_id)
     video = sporting_event.get_videos_by_tags(output_key="switched")[0]
-    df = builder.build_df([
-        sporting_event.get_observation_log(video_id=video.video_id)
-    ])
+    df = builder.build_df([sporting_event.get_observation_log(video_id=video.video_id)])
 
     print(df)
 
