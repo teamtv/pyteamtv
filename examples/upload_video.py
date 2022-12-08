@@ -28,6 +28,11 @@ def main():
         # video = original.upload_video(
         #    "video.mp4",
         # )
+    else:
+        print(f"SportingEvent: {sporting_event} - {sporting_event.sporting_event_id}")
+        # video = sporting_event.upload_video(
+        #    "video.mp4",
+        # )
 
 
 if __name__ == "__main__":
