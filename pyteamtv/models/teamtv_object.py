@@ -14,3 +14,9 @@ class TeamTVObject(object):
 
     def _use_attributes(self, attributes: dict):
         self._metadata = attributes.get("_metadata", {})
+
+    def has_privilege(self, action: str) -> bool:
+        for privilege, status in self.metadata.get("privilegesV2", {}).items():
+            if privilege.endswith(":" + action):
+                return status["ok"]
+        return False

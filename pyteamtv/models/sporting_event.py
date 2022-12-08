@@ -122,6 +122,17 @@ class SportingEvent(TeamTVObject):
     def is_local(self):
         return self._is_local
 
+    @property
+    def original(self) -> Optional["SportingEvent"]:
+        original_sporting_event_id = self.tags.get("copyOf")
+        if original_sporting_event_id:
+            return SportingEvent(
+                self._requester,
+                self._requester.request(
+                    "GET", f"/sportingEvents/{original_sporting_event_id}"
+                ),
+            )
+
     def get_clock(self, id_: str) -> Optional[Clock]:
         if id_ not in self._clocks:
             for key, clock in self._clocks.items():
@@ -282,7 +293,7 @@ class SportingEvent(TeamTVObject):
     def _use_attributes(self, attributes: dict):
         self._name = attributes["name"]
         self._sporting_event_id = attributes["sportingEventId"]
-        self._tags = attributes.get("tags", {})
+        self._tags = attributes.get("tags") or {}
         self._video_ids = attributes.get("videoIds", [])
         self._clocks = attributes["clocks"]
         self._scheduled_at = datetime.fromisoformat(

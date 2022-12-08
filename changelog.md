@@ -1,3 +1,8 @@
+## 0.17.0 (2022-12-08)
+
+Feature:
+- Add has privilege check, and original item
+
 ## 0.16.0 (2022-11-25)
 
 Bugfix:
