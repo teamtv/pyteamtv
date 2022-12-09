@@ -1,10 +1,44 @@
+import re
+
 from .list import List
 from .person import Person
 from .player import Player
 from .teamtv_object import TeamTVObject
 
 
+# Compile a regex pattern for matching the sponsor name
+sponsor_remove_pattern = re.compile(r"/(.+?) ([0-9a-z]+)$")
+
+# Compile a regex pattern for replacing multiple whitespace with a single one
+whitespace_replace_pattern = re.compile(r'\s+')
+
+
+def strip_sponsor(name: str) -> str:
+    # Replace the sponsor name with just the team name
+    name = sponsor_remove_pattern.sub(r" \2", name)
+    return whitespace_replace_pattern.sub(' ', name)
+
+
+def get_team_key(team_name: str) -> str:
+    # Remove the sponsor name, convert the team name to lowercase,
+    # remove any whitespace, and return the result
+    return (
+        strip_sponsor(team_name)
+        .lower()
+        .replace(" ", "")
+        .strip()
+    )
+
+
 class Team(TeamTVObject):
+    @property
+    def full_name(self):
+        return self._full_name
+
+    @property
+    def key(self):
+        return self._key
+
     @property
     def name(self):
         return self._name
@@ -27,14 +61,17 @@ class Team(TeamTVObject):
             tags = {}
 
         self._team_id = attributes["teamId"]
-        self._name = attributes["name"]
-        self._sport_type = attributes["sportType"]
+        self._full_name = attributes["name"]
+        self._key = get_team_key(self._full_name)
+        self._name = strip_sponsor(self._full_name)
+
+        self._sport_type = attributes.get("sportType")
         self._tags = tags
 
         super()._use_attributes(attributes)
 
     def __repr__(self):
-        return f"<Team name={self.name} team_id={self.team_id}>"
+        return f"<Team name={self.full_name} team_id={self.team_id}>"
 
     def get_players(self):
         def player_factory(requester, attributes) -> Player:

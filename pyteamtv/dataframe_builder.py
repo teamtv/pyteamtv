@@ -1,9 +1,12 @@
 import math
+
 from typing import List, Optional
 
 from pyteamtv.models.observation_log import ObservationLog
 from pyteamtv.models.person import Person
 from pyteamtv.models.resource_group.team import TeamResourceGroup
+from pyteamtv.models.sporting_event import SportingEvent
+from pyteamtv.models.team import Team
 
 
 def pol2cart(angle: float, distance: float):
@@ -19,14 +22,16 @@ def pol2cart(angle: float, distance: float):
     return x, y
 
 
+
 class DataframeBuilder:
     def __init__(self, resource_group: TeamResourceGroup):
-        # self.teams = {
-        #     team.team_id: team for team in resource_group.get_teams()
-        # }
+        self.teams = {
+            team.team_id: team for team in resource_group.get_teams()
+        }
         self.persons = {
             person.person_id: person for person in resource_group.get_persons()
         }
+        self._requester = resource_group._requester
 
     def build_df(self, observation_logs: List[ObservationLog]):
         try:
@@ -70,6 +75,57 @@ class DataframeBuilder:
             person = dict()
         return person
 
+    def get_team_data(self, sporting_event: SportingEvent, attributes: dict):
+        """
+        1. Get it from the list of teams
+        2. Get it from the attributes
+        3. Get a generic one from the SportingEvent
+
+        NOTE: this function has a side-effect: the self.teams dictionary will
+              be updated when a team is not found and a fake team is created
+
+        """
+
+        team_id = attributes['teamId']
+        if sporting_event.home_team_id == team_id:
+            ground = "home"
+        else:
+            ground = "away"
+
+        if team_id in self.teams:
+            team = self.teams[team_id]
+        else:
+            if "team" in attributes:
+                # This can happen when a team is not shared, but the data is.
+                # For certain leagues the data is entered from the club account
+                # and send to the exchange. The teams entities are not shared
+                team = Team(self._requester, attributes)
+            else:
+                home_team_name, away_team_name = sporting_event.name.split(" - ")
+                team = Team(
+                    self._requester,
+                    {
+                        'teamId': team_id,
+                        'name': (
+                            home_team_name if ground == "home" else away_team_name
+                        )
+                    }
+                )
+
+            # It's a bad practice to update data in a get function
+            # TODO: refactor
+            self.teams[team_id] = team
+
+        return dict(
+            team_id=team.team_id,
+            team_name=team.name,
+            team_ground=ground,
+            position=attributes.get("position"),
+
+            team_name_full=team.full_name,
+            team_key=team.key
+        )
+
     def build_records(self, observation_logs: List[ObservationLog]):
         observations = []
         skip_attributes = {
@@ -81,6 +137,7 @@ class DataframeBuilder:
             "inPersonId",
             "outPerson",
             "outPersonId",
+            "opponentPersonId"
         }
 
         for observation_log in observation_logs:
@@ -90,19 +147,7 @@ class DataframeBuilder:
             for observation in observation_log:
 
                 if observation.code in ("START-POSSESSION", "POSSESSION"):
-                    if "team" in observation.attributes:
-                        team_data = observation.attributes["team"]
-                    else:
-                        team_data = sporting_event.get_team(
-                            observation.attributes["teamId"]
-                        )
-
-                    team = dict(
-                        team_id=observation.attributes["teamId"],
-                        team_name=team_data["name"],
-                        team_ground=team_data["ground"],
-                        position=observation.attributes.get("position"),
-                    )
+                    team = self.get_team_data(sporting_event, observation.attributes)
                 else:
                     person = self._build_person_data(observation.attributes)
                     opponent_person = self._build_person_data(

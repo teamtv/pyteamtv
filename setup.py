@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import setuptools
 import builtins
 from distutils.core import setup
@@ -8,7 +10,8 @@ import pyteamtv
 
 
 def setup_package():
-    with open("README.md", "r") as f:
+    base_dir = Path(__file__).parent
+    with open(base_dir / "README.md", "r") as f:
         readme = f.read()
 
     setup(

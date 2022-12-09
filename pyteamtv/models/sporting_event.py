@@ -113,6 +113,10 @@ class SportingEvent(TeamTVObject):
         return self._tags
 
     @property
+    def type(self):
+        return self._type
+
+    @property
     def main_video_id(self) -> Optional[str]:
         if self._video_ids:
             return self._video_ids[0]
@@ -300,6 +304,7 @@ class SportingEvent(TeamTVObject):
             attributes["scheduledAt"].replace("Z", "+00:00")
         )
         self._is_local = attributes["_metadata"]["source"]["type"] == "ResourceGroup"
+        self._type = attributes['type']
 
         super()._use_attributes(attributes)
 
@@ -327,14 +332,13 @@ class MatchSportingEvent(SportingEvent):
 
         super()._use_attributes(attributes)
 
-    def get_team(self, team_id: str) -> dict:
-        home_team_name, away_team_name = self.name.split(" - ")
+    def get_ground(self, team_id: str) -> Optional[str]:
         if team_id == self.home_team_id:
-            return {"name": home_team_name, "teamId": team_id, "ground": "home"}
+            return "home"
         elif team_id == self.away_team_id:
-            return {"name": away_team_name, "teamId": team_id, "ground": "away"}
+            return "away"
         else:
-            return {"name": None, "teamId": None, "ground": None}
+            return None
 
     def get_line_up(self) -> LineUp:
         data = self._requester.request("GET", f"/lineUps/{self.line_up_id}")
