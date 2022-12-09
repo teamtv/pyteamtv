@@ -10,24 +10,19 @@ from .teamtv_object import TeamTVObject
 sponsor_remove_pattern = re.compile(r"/(.+?) ([0-9a-z]+)$")
 
 # Compile a regex pattern for replacing multiple whitespace with a single one
-whitespace_replace_pattern = re.compile(r'\s+')
+whitespace_replace_pattern = re.compile(r"\s+")
 
 
 def strip_sponsor(name: str) -> str:
     # Replace the sponsor name with just the team name
     name = sponsor_remove_pattern.sub(r" \2", name)
-    return whitespace_replace_pattern.sub(' ', name)
+    return whitespace_replace_pattern.sub(" ", name)
 
 
 def get_team_key(team_name: str) -> str:
     # Remove the sponsor name, convert the team name to lowercase,
     # remove any whitespace, and return the result
-    return (
-        strip_sponsor(team_name)
-        .lower()
-        .replace(" ", "")
-        .strip()
-    )
+    return strip_sponsor(team_name).lower().replace(" ", "").strip()
 
 
 class Team(TeamTVObject):

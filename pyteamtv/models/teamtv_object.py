@@ -12,8 +12,15 @@ class TeamTVObject(object):
     def metadata(self):
         return self._metadata
 
+    @property
+    def is_local(self):
+        return self._is_local
+
     def _use_attributes(self, attributes: dict):
         self._metadata = attributes.get("_metadata", {})
+
+        shared_type = self._metadata.get("source", {}).get("type", {})
+        self._is_local = (shared_type is None) or (shared_type == "ResourceGroup")
 
     def has_privilege(self, action: str) -> bool:
         for privilege, status in self.metadata.get("privilegesV2", {}).items():

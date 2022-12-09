@@ -123,10 +123,6 @@ class SportingEvent(TeamTVObject):
         return None
 
     @property
-    def is_local(self):
-        return self._is_local
-
-    @property
     def original(self) -> Optional["SportingEvent"]:
         original_sporting_event_id = self.tags.get("copyOf")
         if original_sporting_event_id:
@@ -303,8 +299,7 @@ class SportingEvent(TeamTVObject):
         self._scheduled_at = datetime.fromisoformat(
             attributes["scheduledAt"].replace("Z", "+00:00")
         )
-        self._is_local = attributes["_metadata"]["source"]["type"] == "ResourceGroup"
-        self._type = attributes['type']
+        self._type = attributes["type"]
 
         super()._use_attributes(attributes)
 

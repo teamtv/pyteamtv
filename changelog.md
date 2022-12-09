@@ -1,3 +1,8 @@
+## 0.18.1 (2022-12-09)
+
+Bugfix:
+- Move `is_local` to `TeamTVObject`
+
 ## 0.18.0 (2022-12-09)
 
 Feature:

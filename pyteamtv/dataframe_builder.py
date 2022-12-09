@@ -22,12 +22,9 @@ def pol2cart(angle: float, distance: float):
     return x, y
 
 
-
 class DataframeBuilder:
     def __init__(self, resource_group: TeamResourceGroup):
-        self.teams = {
-            team.team_id: team for team in resource_group.get_teams()
-        }
+        self.teams = {team.team_id: team for team in resource_group.get_teams()}
         self.persons = {
             person.person_id: person for person in resource_group.get_persons()
         }
@@ -86,7 +83,7 @@ class DataframeBuilder:
 
         """
 
-        team_id = attributes['teamId']
+        team_id = attributes["teamId"]
         if sporting_event.home_team_id == team_id:
             ground = "home"
         else:
@@ -105,11 +102,11 @@ class DataframeBuilder:
                 team = Team(
                     self._requester,
                     {
-                        'teamId': team_id,
-                        'name': (
+                        "teamId": team_id,
+                        "name": (
                             home_team_name if ground == "home" else away_team_name
-                        )
-                    }
+                        ),
+                    },
                 )
 
             # It's a bad practice to update data in a get function
@@ -121,9 +118,8 @@ class DataframeBuilder:
             team_name=team.name,
             team_ground=ground,
             position=attributes.get("position"),
-
             team_name_full=team.full_name,
-            team_key=team.key
+            team_key=team.key,
         )
 
     def build_records(self, observation_logs: List[ObservationLog]):
@@ -137,7 +133,7 @@ class DataframeBuilder:
             "inPersonId",
             "outPerson",
             "outPersonId",
-            "opponentPersonId"
+            "opponentPersonId",
         }
 
         for observation_log in observation_logs:
