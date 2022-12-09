@@ -154,7 +154,7 @@ class SportingEvent(TeamTVObject):
             if not video_id:
                 video_id = self.main_video_id
 
-            if video_id:
+            if video_id and video_id in self._clocks:
                 clock_id = self._clocks[video_id]["clockId"]
             else:
                 clock_id = "U1"
