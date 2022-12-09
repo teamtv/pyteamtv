@@ -1,3 +1,9 @@
+## 0.18.0 (2022-12-09)
+
+Feature:
+- Do some cleaning when loading teams
+- Add type to SportingEvent (match or training)
+
 ## 0.17.0 (2022-12-08)
 
 Feature:
