@@ -14,6 +14,7 @@ from .video import Video
 
 from tusclient.uploader import Uploader
 
+from ..exceptions import InputError
 from ..infra.requester import Requester
 
 
@@ -249,37 +250,71 @@ class SportingEvent(TeamTVObject):
         tags: Optional[dict] = None,
         description: Optional[str] = None,
         skip_transcoding: Optional[bool] = False,
+        resume_if_exists: Optional[bool] = False,
     ) -> Video:
         chunks_per_request = int(chunks_per_request)
+
         if chunks_per_request < 1:
             chunks_per_request = 1
 
-        files = []
-        for filename in file_paths:
-            files.append(
-                {"name": os.path.basename(filename), "size": os.path.getsize(filename)}
+        video = None
+        if resume_if_exists:
+            if not tags:
+                raise InputError(
+                    "When `resume_if_exists` is specified you must pass `tags`"
+                )
+
+            videos = self.get_videos_by_tags(**tags)
+            if not videos:
+                video = None
+            else:
+                # We found an existing video with matching tags. Check the files
+                video = videos[0]
+                if len(video.parts) != len(file_paths):
+                    raise InputError(
+                        f"Number of parts doesn't match. You specified {len(file_paths)} files. "
+                        f"The existing video ({video.video_id}) has {len(video.parts)} parts"
+                    )
+
+                for i, filename in enumerate(file_paths):
+                    if os.path.getsize(filename) != video.parts[i]["fileSize"]:
+                        raise InputError(
+                            f"File size of '{filename}' doesn't match existing video ({video.video_id}). "
+                            f"Local size: {os.path.getsize(filename)}. Remote size: {video.parts[i]['fileSize']}"
+                        )
+
+                video_id = video.video_id
+
+        if not video:
+            files = []
+            for filename in file_paths:
+                files.append(
+                    {
+                        "name": os.path.basename(filename),
+                        "size": os.path.getsize(filename),
+                    }
+                )
+
+            video_id = self._requester.request(
+                "POST",
+                f"/sportingEvents/{self.sporting_event_id}/initVideoUpload",
+                {
+                    "files": files,
+                    "tags": tags or {},
+                    "description": description,
+                    "skipTranscoding": skip_transcoding,
+                },
             )
 
-        video_id = self._requester.request(
-            "POST",
-            f"/sportingEvents/{self.sporting_event_id}/initVideoUpload",
-            {
-                "files": files,
-                "tags": tags or {},
-                "description": description,
-                "skipTranscoding": skip_transcoding,
-            },
-        )
+            video = Video(
+                self._requester, self._requester.request("GET", f"/videos/{video_id}")
+            )
 
-        video = Video(
-            self._requester, self._requester.request("GET", f"/videos/{video_id}")
-        )
         for i, part in enumerate(video.parts):
             uploader = Uploader(
                 file_paths[i],
                 url=part["tusUploadUrl"],
                 chunk_size=chunks_per_request * 25 * 1024 * 1024,
-                log_func=lambda msg: logging.info(f"Uploading: {msg}"),
                 retries=5,
                 retry_delay=5,
             )
