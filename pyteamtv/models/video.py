@@ -26,6 +26,10 @@ class Video(TeamTVObject):
     def skip_transcoding(self):
         return self._skip_transcoding
 
+    @property
+    def is_upload_completed(self):
+        return all(part["state"] != "new" for part in self._parts)
+
     def __repr__(self):
         return f"<Video video_id={self.video_id} state={self.state}>"
 

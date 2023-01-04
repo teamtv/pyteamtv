@@ -283,6 +283,9 @@ class SportingEvent(TeamTVObject):
                             f"Local size: {os.path.getsize(filename)}. Remote size: {video.parts[i]['fileSize']}"
                         )
 
+                if video.is_upload_completed:
+                    return video
+
                 video_id = video.video_id
 
         if not video:

@@ -108,7 +108,7 @@ class TestVideoUpload:
 
     def test_resume_video(self, current_team, test_mp4):
         """
-        Test upload of a new video.
+        Test resume of upload of an existing video.
 
         This test includes:
         1. Test tags are set when resume_if_exists is set
@@ -151,6 +151,7 @@ class TestVideoUpload:
                                 "fileSize": file_size
                                 - 1,  # Return an incorrect filesize. The resume code MUST check
                                 # if the local and remote filesizes match.
+                                "state": "new",
                                 "tusUploadUrl": "https://upload-url/random-url",
                             }
                         ],
@@ -193,6 +194,7 @@ class TestVideoUpload:
                     "parts": [
                         {
                             "fileSize": file_size,
+                            "state": "new",
                             "tusUploadUrl": "https://upload-url/random-url",
                         }
                     ],
@@ -220,6 +222,7 @@ class TestVideoUpload:
                         "parts": [
                             {
                                 "fileSize": file_size,
+                                "state": "new",
                                 "tusUploadUrl": "https://upload-url/random-url",
                             }
                         ],
@@ -234,3 +237,57 @@ class TestVideoUpload:
             )
 
             assert len(adapter.last_request.body) == 100
+
+    def test_resume_completed_video(self, current_team, test_mp4):
+        """
+        Test calling upload to finished video.
+        """
+        sporting_event_id = "sporting-event-id-123"
+        tags = {"output_key": "main"}
+        video_id = "video-id-123"
+
+        with requests_mock.Mocker() as mock:
+            mock.get(
+                f"https://fake-url/sportingEvents/{sporting_event_id}",
+                json={
+                    "type": "training",
+                    "name": "Test Training",
+                    "sportingEventId": sporting_event_id,
+                    "clocks": {},
+                    "videoIds": [video_id],
+                    "scheduledAt": "2022-01-01T10:00:00.000Z",
+                },
+            )
+
+            sporting_event = current_team.get_sporting_event(
+                sporting_event_id=sporting_event_id
+            )
+
+            file_size = os.path.getsize(test_mp4)
+
+            mock.get(
+                f"https://fake-url/videos",
+                json=[
+                    {
+                        "videoId": video_id,
+                        "state": "new",
+                        "tags": tags,
+                        "parts": [
+                            {
+                                "fileSize": file_size,
+                                "state": "upload-success",
+                                "tusUploadUrl": "https://upload-url/random-url",
+                            }
+                        ],
+                    }
+                ],
+            )
+
+            video = sporting_event.upload_video(
+                test_mp4,
+                description="Test Training",
+                resume_if_exists=True,
+                tags=tags,
+            )
+
+            assert video.video_id == video_id
