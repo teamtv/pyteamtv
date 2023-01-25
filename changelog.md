@@ -1,3 +1,8 @@
+## 0.20.0 (2023-01-25)
+
+Feature:
+- Make decoding of token available output of TeamTVApp
+
 ## 0.19.0 (2023-01-15)
 
 Feature:

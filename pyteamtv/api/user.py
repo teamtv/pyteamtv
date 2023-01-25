@@ -1,7 +1,5 @@
 from typing import Optional
 
-import jwt
-
 from pyteamtv.infra.requester import Requester
 from pyteamtv.models.list import List
 from pyteamtv.models.membership import Membership
@@ -9,7 +7,7 @@ from pyteamtv.models.membership_list import MembershipList
 from pyteamtv.models.sharing_group import SharingGroup
 
 from .endpoint import API_ENDPOINT
-from .token import TOKEN
+from .token import decode
 from ..exceptions import TeamNotFound, InputError
 from ..models.resource_group.team import TeamResourceGroup
 
@@ -18,12 +16,9 @@ class TeamTVUser(object):
     def __init__(self, jwt_token, use_cache: bool = False):
         self.jwt_token = jwt_token
 
-        token = jwt.decode(
+        token = decode(
             jwt_token,
-            TOKEN,
-            algorithms="RS256",
             verify=False,
-            options={"verify_signature": False},
         )
 
         self._requester = Requester(

@@ -1,19 +1,15 @@
-import jwt
-
 from pyteamtv.infra.requester import Requester
 from pyteamtv.models.resource_group.factory import factory as resource_group_factory
 from .endpoint import API_ENDPOINT
 
-from .token import TOKEN
+from .token import decode
 
 
 class TeamTVApp(object):
     def __init__(self, jwt_token, app_id: str, use_cache: bool = False):
         self.jwt_token = jwt_token
 
-        token = jwt.decode(
-            jwt_token, TOKEN, algorithms="RS256", verify=True, audience=f"app:{app_id}"
-        )
+        token = decode(jwt_token, app_id)
 
         self._requester = Requester(
             f"{API_ENDPOINT}/api", jwt_token, use_cache=use_cache
