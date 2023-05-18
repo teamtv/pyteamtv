@@ -1,3 +1,8 @@
+## 0.21.0 (2023-05-18)
+
+Feature:
+- Add `timeout` argument for `Requester`, with default of 30 seconds
+
 ## 0.20.0 (2023-01-25)
 
 Feature:
