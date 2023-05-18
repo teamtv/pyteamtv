@@ -11,7 +11,12 @@ logger = logging.getLogger(__name__)
 
 class Requester(object):
     def __init__(
-        self, base_url, jwt_token, headers: dict = None, use_cache: bool = False, timeout: Optional[int] = 30
+        self,
+        base_url,
+        jwt_token,
+        headers: dict = None,
+        use_cache: bool = False,
+        timeout: Optional[int] = 30,
     ):
         self._base_url = base_url
         self.jwt_token = jwt_token
@@ -51,8 +56,11 @@ class Requester(object):
         headers["User-Agent"] = f"pyteamtv {pyteamtv.__version__}"
         logger.debug(f"Sending {method} request to {url} - {self.headers}")
         response = self.session.request(
-            method, self._base_url + url, headers=headers, json=input_,
-            timeout=self.timeout
+            method,
+            self._base_url + url,
+            headers=headers,
+            json=input_,
+            timeout=self.timeout,
         )
         took = time.time() - start
         logger.debug(f"Request took: {took * 1000:.2f}ms")
