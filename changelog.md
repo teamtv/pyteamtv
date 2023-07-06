@@ -1,3 +1,8 @@
+## 0.22.0 (2023-07-06)
+
+Feature:
+- Add basic LearningGroup support
+
 ## 0.21.0 (2023-05-18)
 
 Feature:
