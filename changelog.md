@@ -1,3 +1,8 @@
+## 0.22.1 (2023-08-23)
+
+Bugfix:
+- Fix in DataframeBuilder when opponentPerson is filled
+
 ## 0.22.0 (2023-07-06)
 
 Feature:

@@ -50,12 +50,12 @@ class DataframeBuilder:
         if in_key in attributes:
             person = {
                 f"{out_prefix}person_id": attributes[pk_name],
-                f"{out_prefix}first_name": attributes["person"]["firstName"],
-                f"{out_prefix}last_name": attributes["person"]["lastName"],
-                f"{out_prefix}number": attributes["person"]["number"],
-                f"{out_prefix}full_name": attributes["person"]["firstName"]
+                f"{out_prefix}first_name": attributes[in_key]["firstName"],
+                f"{out_prefix}last_name": attributes[in_key]["lastName"],
+                f"{out_prefix}number": attributes[in_key]["number"],
+                f"{out_prefix}full_name": attributes[in_key]["firstName"]
                 + " "
-                + attributes["person"]["lastName"],
+                + attributes[in_key]["lastName"],
             }
         elif pk_name in attributes:
             person_: Optional[Person] = self.persons.get(attributes[pk_name])
