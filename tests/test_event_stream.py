@@ -175,9 +175,8 @@ class TestEventStream:
 
         with streams[0].open(seek_to_start=False) as stream:
             time.sleep(
-                0.001
+                0.5
             )  # Make sure event timestamp below is after start of stream.open
-
             requests_mock.get(
                 f"https://fake-eventstream/streams/{event_stream_id}/list?last-event-id=642270db37fdd48cb30572e26b2cfc50",
                 json=[
