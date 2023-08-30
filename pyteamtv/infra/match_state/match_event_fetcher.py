@@ -1,10 +1,9 @@
+from datetime import datetime, timezone
 from threading import Event
 
 import requests
 import time
 from queue import Queue
-
-import dateutil.parser
 
 
 def match_event_fetcher(
@@ -21,24 +20,17 @@ def match_event_fetcher(
 
         events = response.json()
         for event in events:
+            occurred_on = datetime.fromisoformat(
+                event["occurred_on"].replace("Z", "+00:00")
+            ).replace(tzinfo=timezone.utc)
             match_event_queue.put(
                 dict(
                     eventType=event["event_name"],
                     eventAttributes=event["event_attributes"],
-                    occurredOn=dateutil.parser.parse(event["occurred_on"]),
+                    occurredOn=occurred_on,
                 )
             )
             last_event_id = event["event_id"]
 
         time.sleep(1)
-    # print("hi")
-    #         url = 'https://ttv-live.herokuapp.com/streams/{}/subscribe/sse'.format(event_stream_id)
-    # print(url)
-    #
-    # response = with_urllib3(url)  # or with_requests(url)
-    # client = sseclient.SSEClient(response)
-    # for event in client.events():
-    #                 dict(
-    #                 eventType=event.event,
-    #                 eventAttributes=json.loads(event.data)['eventAttributes']
-    #     match_event_queue.put(event)
+

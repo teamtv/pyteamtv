@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 import time
 from queue import Queue
 from typing import Iterator
@@ -8,6 +8,10 @@ from threading import Thread, Event
 from .teamtv_object import TeamTVObject
 from ..infra.match_state.event_store import QueueEventStore
 from ..infra.match_state.match_event_fetcher import match_event_fetcher
+
+
+def utcnow() -> datetime:
+    return datetime.fromtimestamp(time.time(), timezone.utc)
 
 
 class EventStreamReader(Iterator):
@@ -27,7 +31,7 @@ class EventStreamReader(Iterator):
 
     def __init__(self, poll_url: str, seek_to_start: bool = False):
         self.queue = Queue()
-        self.start_timestamp = None if seek_to_start else datetime.datetime.utcnow()
+        self.start_timestamp = None if seek_to_start else utcnow()
         self.event_store = QueueEventStore(self.queue)
         self.should_stop = Event()
         self.cursor = 0
