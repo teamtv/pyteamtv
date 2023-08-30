@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import List
 
 from .event_store import Event
@@ -13,7 +13,7 @@ def diff(end_time, start_time) -> float:
     return d
 
 
-def calculate_match_state(events: List[Event]) -> MatchState:
+def calculate_match_state(events: List[Event], timestamp: datetime) -> MatchState:
     if len(events) == 0:
         return MatchState(
             home_score=0, away_score=0, current_period=0, period_active=False, time=0
@@ -99,4 +99,5 @@ def calculate_match_state(events: List[Event]) -> MatchState:
         time=current_time,
         current_period=current_period,
         period_active=period_active,
+        current_possession_team_id=current_possession_team_id,
     )

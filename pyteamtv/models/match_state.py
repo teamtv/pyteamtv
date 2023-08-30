@@ -1,36 +1,15 @@
-class MatchState(object):
-    def __init__(
-        self,
-        home_score: int,
-        away_score: int,
-        time: float,
-        current_period: int,
-        period_active: bool,
-    ):
-        self.home_score = home_score
-        self.away_score = away_score
-        self.time = time
-        self.current_period = current_period
-        self.period_active = period_active
+from dataclasses import dataclass
+from typing import Optional
 
-    def __eq__(self, other: "MatchState"):
-        return (
-            self.home_score == other.home_score
-            and self.away_score == other.away_score
-            and self.time == other.time
-            and self.current_period == other.current_period
-            and self.period_active == other.period_active
-        )
 
-    @property
-    def as_dict(self):
-        return dict(
-            home_score=self.home_score,
-            away_score=self.away_score,
-            time=self.time,
-            current_period=self.current_period,
-            period_active=self.period_active,
-        )
+@dataclass
+class MatchState:
+    home_score: int
+    away_score: int
+    time: float
+    current_period: int
+    period_active: bool
+    current_possession_team_id: Optional[str] = None
 
     @property
     def time_str(self):

@@ -98,10 +98,13 @@ class TestEventStream:
                 ],
             )
 
-            _, event = next(stream)
+            state, event = next(stream)
             assert event.event_type == "SportingEventCreated"
-            _, event = next(stream)
+            assert not state.period_active
+
+            state, event = next(stream)
             assert event.event_type == "StartPeriod"
+            assert state.period_active
 
     def test_get_from_start(self, requests_mock, current_team):
         sporting_event_id = "sporting-event-id-123"
@@ -189,8 +192,32 @@ class TestEventStream:
                         "event_id": "ddfa76d51a72889c0d9f94f3da269199",
                         "occurred_on": create_timestamp(),
                     },
+                    {
+                        "event_attributes": {
+                            "startPossessionAttributes": {"teamId": "team-id-123"}
+                        },
+                        "event_name": "StartPossession",
+                        "event_id": "ddfa76d51a72889c0d9f94f3da269191",
+                        "occurred_on": create_timestamp(),
+                    },
+                    {
+                        "event_attributes": {
+                            "startPossessionAttributes": {"teamId": "team-id-567"}
+                        },
+                        "event_name": "StartPossession",
+                        "event_id": "ddfa76d51a72889c0d9f94f3da269191",
+                        "occurred_on": create_timestamp(),
+                    },
                 ],
             )
 
-            _, event = next(stream)
+            state, event = next(stream)
             assert event.event_type == "StartPeriod"
+            assert state.period_active
+            assert state.current_period == 1
+
+            state, event = next(stream)
+            assert state.current_possession_team_id == "team-id-123"
+
+            state, event = next(stream)
+            assert state.current_possession_team_id == "team-id-567"
