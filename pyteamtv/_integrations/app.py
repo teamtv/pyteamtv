@@ -2,6 +2,7 @@ import os
 from typing import Optional, MutableMapping
 
 from pyteamtv import TeamTVUser, TeamTVApp
+from pyteamtv.models.access_requester import AccessRequester
 from pyteamtv.models.resource_group.team import TeamResourceGroup
 
 
@@ -17,6 +18,9 @@ class App:
 
         self.observation_logs = dict()
         self.sporting_events = dict()
+
+    def get_access_requester(self) -> AccessRequester:
+        return self.api.get_access_requester()
 
     def should_refresh(self, token: Optional[str]):
         if not token:

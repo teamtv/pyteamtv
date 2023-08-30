@@ -9,6 +9,7 @@ from pyteamtv.models.sharing_group import SharingGroup
 from .endpoint import API_ENDPOINT
 from .token import decode
 from ..exceptions import TeamNotFound, InputError
+from ..models.access_requester import AccessRequester
 from ..models.resource_group.team import TeamResourceGroup
 
 
@@ -25,6 +26,9 @@ class TeamTVUser(object):
             f"{API_ENDPOINT}/api", jwt_token, use_cache=use_cache
         )
         self.__token = token
+
+    def get_access_requester(self) -> AccessRequester:
+        print(self.__token)
 
     def get_membership_list(self):
         """
