@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from pyteamtv.infra.requester import Requester
@@ -7,7 +9,7 @@ from pyteamtv.models.resource_group.team import TeamResourceGroup
 
 @pytest.fixture
 def test_mp4():
-    return os.path.dirname(__file__) + "/test.mp4"
+    return Path(__file__).parent / "test.mp4"
 
 
 @pytest.fixture
