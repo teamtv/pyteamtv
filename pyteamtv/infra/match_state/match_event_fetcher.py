@@ -33,4 +33,3 @@ def match_event_fetcher(
             last_event_id = event["event_id"]
 
         time.sleep(1)
-
