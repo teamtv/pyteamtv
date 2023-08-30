@@ -28,7 +28,6 @@ class EventStreamReader(Iterator):
                 )
                 item = events[self.cursor]
                 self.cursor += 1
-                print(f"Comparing {item.occurred_on=} - {self.start_timestamp=}")
                 if self.start_timestamp and item.occurred_on < self.start_timestamp:
                     continue
 
