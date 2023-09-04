@@ -38,8 +38,15 @@ class TeamTVUser(object):
             Membership, self._requester, "GET", "/users/me/memberships"
         )
 
-    def get_public_sharing_groups(self):
-        return List(SharingGroup, self._requester, "GET", "/sharingGroups")
+    def get_public_sharing_groups(self, sport_type: Optional[str] = None):
+        return List(
+            SharingGroup,
+            self._requester,
+            "GET",
+            f"/sharingGroups?sportType={sport_type}"
+            if sport_type
+            else "/sharingGroups",
+        )
 
     def get_team(
         self, name: Optional[str] = None, resource_group_id: Optional[str] = None

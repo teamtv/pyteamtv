@@ -1,3 +1,8 @@
+## 0.23.0 (2023-09-04)
+
+Feature:
+- Allow sportType for sharing groups api
+
 ## 0.22.1 (2023-08-23)
 
 Bugfix:
