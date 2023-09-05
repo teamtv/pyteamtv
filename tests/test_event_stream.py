@@ -99,11 +99,11 @@ class TestEventStream:
                 ],
             )
 
-            state, event = next(stream)
+            config, state, event = next(stream)
             assert event.event_type == "SportingEventCreated"
             assert not state.period_active
 
-            state, event = next(stream)
+            config, state, event = next(stream)
             assert event.event_type == "StartPeriod"
             assert state.period_active
 
@@ -220,20 +220,20 @@ class TestEventStream:
                 ],
             )
 
-            match_config, match_state, event = next(stream)
+            config, state, event = next(stream)
             assert event.event_type == "StartPeriod"
-            assert match_state.period_active
-            assert match_state.current_period == 1
-            assert match_config.period_count == 2
+            assert state.period_active
+            assert state.current_period == 1
+            assert config.period_count == 2
 
-            match_config, match_state, event = next(stream)
-            assert match_state.current_possession_team_id == "team-id-123"
+            config, state, event = next(stream)
+            assert state.current_possession_team_id == "team-id-123"
 
-            match_config, match_state, event = next(stream)
-            assert match_state.current_possession_team_id == "team-id-567"
-            assert match_config.period_count == 2
+            config, state, event = next(stream)
+            assert state.current_possession_team_id == "team-id-567"
+            assert config.period_count == 2
 
-            match_config, match_state, event = next(stream)
+            config, state, event = next(stream)
             assert event.event_type == "MatchConfigChanged"
-            assert match_state.current_possession_team_id == "team-id-567"
-            assert match_config.period_count == 3
+            assert state.current_possession_team_id == "team-id-567"
+            assert config.period_count == 3
