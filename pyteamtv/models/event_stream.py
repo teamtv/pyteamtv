@@ -5,9 +5,11 @@ from typing import Iterator, Tuple
 
 from threading import Thread, Event as ThreadEvent
 
-from .match_state import MatchState
+from .match.match_config import MatchConfig
+from .match.match_state import MatchState
 from .teamtv_object import TeamTVObject
 from ..infra.match_state.event_store import QueueEventStore, Event
+from ..infra.match_state.match_config_calculator import calculate_match_config
 from ..infra.match_state.match_event_fetcher import match_event_fetcher
 from ..infra.match_state.match_state_calculator import calculate_match_state
 
@@ -17,21 +19,24 @@ def utcnow() -> datetime:
 
 
 class EventStreamReader(Iterator):
-    def __next__(self) -> Tuple[MatchState, Event]:
+    def __next__(self) -> Tuple[MatchConfig, MatchState, Event]:
         while True:
             events = self.event_store.get_events()
 
             if len(events) > self.cursor:
-                state = calculate_match_state(
-                    events[: self.cursor + 1],
-                    utcnow(),  # TODO: or should this be occurredOn attribute of event
+                timestamp = (
+                    utcnow()
+                )  # TODO: or should this be occurredOn attribute of event
+                state = calculate_match_state(events[: self.cursor + 1], timestamp)
+                match_config = calculate_match_config(
+                    events[: self.cursor + 1], timestamp
                 )
                 item = events[self.cursor]
                 self.cursor += 1
                 if self.start_timestamp and item.occurred_on < self.start_timestamp:
                     continue
 
-                return state, item
+                return match_config, state, item
 
             time.sleep(0.1)
 

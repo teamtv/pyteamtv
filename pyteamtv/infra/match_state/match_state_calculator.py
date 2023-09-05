@@ -3,7 +3,7 @@ from typing import List
 
 from .event_store import Event
 
-from ...models.match_state import MatchState
+from ...models.match.match_state import MatchState
 
 
 def diff(end_time, start_time) -> float:

@@ -211,16 +211,29 @@ class TestEventStream:
                         "event_id": "ddfa76d51a72889c0d9f94f3da269191",
                         "occurred_on": create_timestamp(),
                     },
+                    {
+                        "event_attributes": {"periodCount": 3},
+                        "event_name": "MatchConfigChanged",
+                        "occurred_on": create_timestamp(),
+                        "event_id": "7e59f7264fbc079fb4359a6f568f8bb7",
+                    },
                 ],
             )
 
-            state, event = next(stream)
+            match_config, match_state, event = next(stream)
             assert event.event_type == "StartPeriod"
-            assert state.period_active
-            assert state.current_period == 1
+            assert match_state.period_active
+            assert match_state.current_period == 1
+            assert match_config.period_count == 2
 
-            state, event = next(stream)
-            assert state.current_possession_team_id == "team-id-123"
+            match_config, match_state, event = next(stream)
+            assert match_state.current_possession_team_id == "team-id-123"
 
-            state, event = next(stream)
-            assert state.current_possession_team_id == "team-id-567"
+            match_config, match_state, event = next(stream)
+            assert match_state.current_possession_team_id == "team-id-567"
+            assert match_config.period_count == 2
+
+            match_config, match_state, event = next(stream)
+            assert event.event_type == "MatchConfigChanged"
+            assert match_state.current_possession_team_id == "team-id-567"
+            assert match_config.period_count == 3
