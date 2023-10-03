@@ -1,3 +1,8 @@
+## 0.24.0 (2023-10-03)
+
+Feature:
+- Add EventStreamReader
+
 ## 0.23.0 (2023-09-04)
 
 Feature:
