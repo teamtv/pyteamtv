@@ -27,9 +27,7 @@ class EventStreamReader(Iterator):
                 utcnow()
             )  # TODO: or should this be occurredOn attribute of event
             state = calculate_match_state(events[: self.cursor + 1], timestamp)
-            match_config = calculate_match_config(
-                events[: self.cursor + 1], timestamp
-            )
+            match_config = calculate_match_config(events[: self.cursor + 1], timestamp)
             item = events[self.cursor]
             self.cursor += 1
             if self.start_timestamp and item.occurred_on < self.start_timestamp:
