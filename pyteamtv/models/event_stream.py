@@ -22,18 +22,19 @@ class EventStreamReader(Iterator):
     def get_last_event(self) -> Optional[Tuple[MatchConfig, MatchState, Event]]:
         events = self.event_store.get_events()
 
-        if len(events) > self.cursor:
-            timestamp = (
-                utcnow()
-            )  # TODO: or should this be occurredOn attribute of event
+        timestamp = utcnow()  # TODO: or should this be occurredOn attribute of event
+
+        while len(events) > self.cursor:
             state = calculate_match_state(events[: self.cursor + 1], timestamp)
             match_config = calculate_match_config(events[: self.cursor + 1], timestamp)
             item = events[self.cursor]
             self.cursor += 1
             if self.start_timestamp and item.occurred_on < self.start_timestamp:
-                return None
+                continue
 
             return match_config, state, item
+
+        return None
 
     def __next__(self) -> Tuple[MatchConfig, MatchState, Event]:
         while True:
