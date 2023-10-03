@@ -1,3 +1,8 @@
+## 0.24.1 (2023-10-03)
+
+Bugfix:
+- Make get_last_event available
+
 ## 0.24.0 (2023-10-03)
 
 Feature:
