@@ -10,6 +10,10 @@ class Event:
         self.occurred_on = occurred_on
         self.attributes = attributes
 
+        event_attribute_key = event_type[0].lower() + event_type[1:] + "Attributes"
+        if not self.attributes.get(event_attribute_key):
+            self.attributes[event_attribute_key] = {}
+
 
 class EventStore(ABC):
     @abstractmethod

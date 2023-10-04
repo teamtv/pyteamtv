@@ -190,6 +190,7 @@ class TestEventStream:
                         "event_attributes": {
                             "period": "1",
                             "time": "1693333394.77399993",
+                            "startPeriodAttributes": [],
                         },
                         "event_name": "StartPeriod",
                         "event_id": "ddfa76d51a72889c0d9f94f3da269199",
@@ -225,6 +226,7 @@ class TestEventStream:
             assert state.period_active
             assert state.current_period == 1
             assert config.period_count == 2
+            assert event.attributes["startPeriodAttributes"] == {}
 
             config, state, event = next(stream)
             assert state.current_possession_team_id == "team-id-123"
@@ -321,6 +323,7 @@ class TestEventStream:
                         "event_attributes": {
                             "period": "1",
                             "time": "1693333394.77399993",
+                            "startPeriodAttributes": [],
                         },
                         "event_name": "StartPeriod",
                         "event_id": "ddfa76d51a72889c0d9f94f3da269199",
