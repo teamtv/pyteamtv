@@ -1,3 +1,8 @@
+## 0.24.3 (2023-10-04)
+
+Bugfix:
+- Set tus retries/retry_delay to sane values
+
 ## 0.24.2 (2023-10-03)
 
 Bugfix:
