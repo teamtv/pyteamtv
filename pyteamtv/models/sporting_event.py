@@ -251,7 +251,14 @@ class SportingEvent(TeamTVObject):
         description: Optional[str] = None,
         skip_transcoding: Optional[bool] = False,
         resume_if_exists: Optional[bool] = False,
+        retries: int = 60,
+        retry_delay: int = 30
     ) -> Video:
+        """Create upload at TeamTV and upload via TUS.
+
+        Note: the retries and retry_delay only impact TusUpload
+        """
+
         chunks_per_request = int(chunks_per_request)
 
         if chunks_per_request < 1:
@@ -318,8 +325,8 @@ class SportingEvent(TeamTVObject):
                 file_paths[i],
                 url=part["tusUploadUrl"],
                 chunk_size=chunks_per_request * 25 * 1024 * 1024,
-                retries=5,
-                retry_delay=5,
+                retries=retries,
+                retry_delay=retry_delay,
             )
 
             uploader.upload()
