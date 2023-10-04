@@ -252,7 +252,7 @@ class SportingEvent(TeamTVObject):
         skip_transcoding: Optional[bool] = False,
         resume_if_exists: Optional[bool] = False,
         retries: int = 60,
-        retry_delay: int = 30
+        retry_delay: int = 30,
     ) -> Video:
         """Create upload at TeamTV and upload via TUS.
 
