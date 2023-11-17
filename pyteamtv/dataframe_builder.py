@@ -140,42 +140,62 @@ class DataframeBuilder:
             sporting_event = observation_log.sporting_event
 
             team = dict()
+            possession_id = None
+            possession_idx = 0
+            has_start_possession = any(
+                observation.code == "START-POSSESSION"
+                for observation in observation_log
+            )
             for observation in observation_log:
+                if has_start_possession and observation.code == "POSSESSION":
+                    # When dataset contains start-possession, ignore the possession observations
+                    # TODO: this might break when livetagging and video tagging are combined
+                    #       as only livetagging contains start-possession
+                    continue
 
                 if observation.code in ("START-POSSESSION", "POSSESSION"):
                     team = self.get_team_data(sporting_event, observation.attributes)
+                    person = {}
+                    opponent_person = {}
+                    possession_id = (
+                        f"{sporting_event.sporting_event_id}:{possession_idx:05d}"
+                    )
+                    possession_idx += 1
                 else:
                     person = self._build_person_data(observation.attributes)
                     opponent_person = self._build_person_data(
                         observation.attributes, "opponent"
                     )
 
-                    attributes = dict()
-                    attributes.update(team)
-                    attributes.update(person)
-                    attributes.update(opponent_person)
-                    for k, v in observation.attributes.items():
-                        if k not in skip_attributes:
-                            attributes[k] = v
+                attributes = dict(possession_id=possession_id)
+                attributes.update(team)
+                attributes.update(person)
+                attributes.update(opponent_person)
+                for k, v in observation.attributes.items():
+                    if k not in skip_attributes:
+                        attributes[k] = v
 
-                    if "angle" in attributes and "distance" in attributes:
-                        attributes["x"], attributes["y"] = pol2cart(
-                            attributes["angle"], attributes["distance"]
-                        )
-
-                    observation_dict = dict(
-                        sporting_event_id=sporting_event.sporting_event_id,
-                        sporting_event_name=sporting_event.name,
-                        sporting_event_scheduled_at=sporting_event.scheduled_at,
-                        observation_id=observation.observation_id,
-                        clock_id=observation.clock_id,
-                        start_time=observation.start_time,
-                        end_time=observation.end_time,
-                        code=observation.code,
-                        description=observation.description,
-                        **attributes,
+                if "angle" in attributes and "distance" in attributes:
+                    attributes["x"], attributes["y"] = pol2cart(
+                        attributes["angle"], attributes["distance"]
                     )
 
-                    observations.append(observation_dict)
+                if "position" in attributes:
+                    attributes["position"] = attributes["position"].split(":")[0]
+
+                observation_dict = dict(
+                    sporting_event_id=sporting_event.sporting_event_id,
+                    sporting_event_name=sporting_event.name,
+                    sporting_event_scheduled_at=sporting_event.scheduled_at,
+                    observation_id=observation.observation_id,
+                    clock_id=observation.clock_id,
+                    start_time=observation.start_time,
+                    end_time=observation.end_time,
+                    code=observation.code,
+                    description=observation.description,
+                    **attributes,
+                )
+
+                observations.append(observation_dict)
 
         return observations

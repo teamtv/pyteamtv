@@ -1,3 +1,8 @@
+## 0.25.0 (2023-11-17)
+
+Feature:
+- Add possession_id and all available observations
+
 ## 0.24.3 (2023-10-04)
 
 Bugfix:
