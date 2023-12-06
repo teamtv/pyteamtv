@@ -48,8 +48,15 @@ class DataframeBuilder:
         pk_name = f"{in_key}Id"
 
         if in_key in attributes:
+            if pk_name in attributes:
+                person_id = attributes[pk_name]
+            else:
+                # In some cases the original personId field is removed but the person data is still there.
+                # When that happens use the personId from the nested data
+                person_id = attributes[in_key]["personId"]
+
             person = {
-                f"{out_prefix}person_id": attributes[pk_name],
+                f"{out_prefix}person_id": person_id,
                 f"{out_prefix}first_name": attributes[in_key]["firstName"],
                 f"{out_prefix}last_name": attributes[in_key]["lastName"],
                 f"{out_prefix}number": attributes[in_key]["number"],

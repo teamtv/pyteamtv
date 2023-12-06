@@ -1,3 +1,9 @@
+## 0.25.1 (2023-12-06)
+
+Bugfix:
+- Use personId from nested data when attribute doesn't exist anymore at top level
+
+
 ## 0.25.0 (2023-11-17)
 
 Feature:
