@@ -2,6 +2,7 @@ import os
 from typing import Optional, MutableMapping
 
 from pyteamtv import TeamTVUser, TeamTVApp
+from pyteamtv.exceptions import TokenMissing, ConfigurationError
 from pyteamtv.models.access_requester import AccessRequester
 from pyteamtv.models.resource_group.team import TeamResourceGroup
 
@@ -88,7 +89,8 @@ def _get_current_app(
     session: MutableMapping,
     token: Optional[str],
     use_cache: bool = False,
-) -> App:
+    raise_on_missing_token: bool = True,
+) -> Optional[App]:
     current_app: Optional[App] = session.get("current_app")
 
     if not current_app or current_app.should_refresh(token):
@@ -98,12 +100,14 @@ def _get_current_app(
             if not app_id:
                 app_id = os.environ.get("TEAMTV_APP_ID")
                 if not app_id:
-                    raise Exception("app_id must be set")
+                    raise ConfigurationError("app_id must be set")
 
             if token:
                 api = TeamTVApp(jwt_token=token, app_id=app_id, use_cache=use_cache)
+            elif raise_on_missing_token:
+                raise TokenMissing("Token not set")
             else:
-                raise Exception("Token not set")
+                return None
 
         session["current_app"] = App(api=api)
 

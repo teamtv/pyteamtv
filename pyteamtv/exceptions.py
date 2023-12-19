@@ -8,3 +8,11 @@ class TeamNotFound(PyTeamTVError):
 
 class InputError(PyTeamTVError):
     pass
+
+
+class TokenMissing(PyTeamTVError):
+    pass
+
+
+class ConfigurationError(PyTeamTVError):
+    pass

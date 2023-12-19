@@ -1,3 +1,8 @@
+## 0.26.0 (2023-12-19)
+
+Feature:
+- Add `raise_on_missing_token` to `get_current_app`
+
 ## 0.25.1 (2023-12-06)
 
 Bugfix:
