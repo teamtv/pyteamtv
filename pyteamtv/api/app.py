@@ -3,6 +3,7 @@ from pyteamtv.models.resource_group.factory import factory as resource_group_fac
 from .endpoint import API_ENDPOINT
 
 from .token import decode
+from ..models.access_requester import AccessRequester
 
 
 class TeamTVApp(object):
@@ -23,3 +24,11 @@ class TeamTVApp(object):
         data = self._requester.request("GET", "/resourceGroups/current")
 
         return resource_group_factory(self._requester, data)
+
+    def get_access_requester(self) -> AccessRequester:
+        return AccessRequester(
+            user_id=self.__token["sub"],
+            tenant_id=self.__token["scope"]["tenantId"],
+            role_names=self.__token["scope"]["roleNames"],
+            resource_group_id=self.__token["scope"]["resourceGroupId"],
+        )

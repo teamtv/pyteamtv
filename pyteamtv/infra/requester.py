@@ -44,7 +44,8 @@ class Requester(object):
 
     def __getstate__(self):
         d = copy(self.__dict__)
-        del d["_session"]
+        if "_session" in d:
+            del d["_session"]
         return d
 
     def request(self, method, url, input_=None):

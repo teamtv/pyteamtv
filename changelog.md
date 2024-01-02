@@ -1,3 +1,8 @@
+## 0.26.1 (2024-01-02)
+
+Bugfix:
+- Add missing `get_access_requester`
+
 ## 0.26.0 (2023-12-19)
 
 Feature:
