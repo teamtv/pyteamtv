@@ -27,7 +27,7 @@ class Requester(object):
 
     @property
     def session(self):
-        if not self._session:
+        if not getattr(self, "_session"):
             if self.use_cache:
                 import requests_cache
                 import hashlib
