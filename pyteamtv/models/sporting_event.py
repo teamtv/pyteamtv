@@ -17,6 +17,45 @@ from tusclient.uploader import Uploader
 from ..exceptions import InputError
 from ..infra.requester import Requester
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def patch_tusclient():
+    logger.warning("Patching the requests PATCH and HEAD methods")
+    from tusclient.request import requests
+
+    original_patch = requests.patch
+
+    def new_patch(*args, **kwargs):
+        """Use a connect-timeout of 20 minutes, this includes sending the data. Read timeout of 10 seconds.
+        We upload in chunks of 100MB. A timeout of 20 minutes means the speed should be
+        at least 85KB/s. Hope that's the case.
+        """
+        try:
+            return original_patch(*args, **kwargs, timeout=(20 * 60, 10))
+        except:
+            logger.exception("Patch request failed")
+            raise
+
+    requests.patch = new_patch
+
+    original_head = requests.head
+
+    def new_head(*args, **kwargs):
+        """Add a total timeout of 10 seconds."""
+        try:
+            return original_head(*args, **kwargs, timeout=10)
+        except:
+            logger.exception("Head request failed")
+            raise
+
+    requests.head = new_head
+
+
+patch_tusclient()
+
 
 class Clock(TeamTVObject):
     @property

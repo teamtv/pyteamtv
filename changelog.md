@@ -1,3 +1,8 @@
+## 0.27.0 (2024-03-07)
+
+Feature:
+- Add connect/read timeout to upload
+
 ## 0.26.3 (2024-01-25)
 
 Bugfix:
