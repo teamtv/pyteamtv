@@ -1,3 +1,8 @@
+## 0.28.0 (2024-03-13)
+
+Feature:
+- Add sync videos
+
 ## 0.27.0 (2024-03-07)
 
 Feature:

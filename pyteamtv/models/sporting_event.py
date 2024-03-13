@@ -282,6 +282,12 @@ class SportingEvent(TeamTVObject):
             ),
         )
 
+    def sync_videos(self):
+        """When video is a copy from an exchange match, sync the videos from the exchange match."""
+        return self._requester.request(
+            "POST", f"/sportingEvents/{self.sporting_event_id}/syncVideos"
+        )
+
     def upload_video(
         self,
         *file_paths: str,
