@@ -19,10 +19,15 @@ def utcnow() -> datetime:
 
 
 class EventStreamReader(Iterator):
-    def get_last_event(self) -> Optional[Tuple[MatchConfig, MatchState, Event]]:
-        events = self.event_store.get_events()
+    def get_last_event(
+        self, timestamp: Optional[datetime] = None
+    ) -> Optional[Tuple[MatchConfig, MatchState, Event]]:
+        events = self.event_store.get_events(timestamp)
 
-        timestamp = utcnow()  # TODO: or should this be occurredOn attribute of event
+        if timestamp is None:
+            timestamp = (
+                utcnow()
+            )  # TODO: or should this be occurredOn attribute of event
 
         while len(events) > self.cursor:
             state = calculate_match_state(events[: self.cursor + 1], timestamp)
@@ -35,6 +40,20 @@ class EventStreamReader(Iterator):
             return match_config, state, item
 
         return None
+
+    def get_state(
+        self, timestamp: Optional[datetime] = None
+    ) -> Tuple[MatchConfig, MatchState]:
+        events = self.event_store.get_events(timestamp)
+
+        if timestamp is None:
+            timestamp = (
+                utcnow()
+            )  # TODO: or should this be occurredOn attribute of event
+
+        state = calculate_match_state(events[: self.cursor + 1], timestamp)
+        match_config = calculate_match_config(events[: self.cursor + 1], timestamp)
+        return match_config, state
 
     def __next__(self) -> Tuple[MatchConfig, MatchState, Event]:
         while True:

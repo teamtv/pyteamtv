@@ -1,3 +1,9 @@
+## 0.29.0 (2024-09-26)
+
+Feature:
+- Use tuspy >= 1.0.0 instead of ==1.0.0, as there is a wheel for 1.0.3 
+- Add get_state to EventStream
+
 ## 0.28.0 (2024-03-13)
 
 Feature:

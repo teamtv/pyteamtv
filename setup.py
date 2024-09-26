@@ -41,7 +41,7 @@ def setup_package():
             "requests>=2.0.0",
             "PyJWT>=1.7.1",
             "pyjwt[crypto]>=1.7.1",
-            "tuspy==1.0.0",
+            "tuspy>=1.0.0",
         ],
         extras_require={
             "test": ["pytest", "pandas>=1.0.0", "requests-mock==1.10.0"],

@@ -37,7 +37,12 @@ class QueueEventStore(EventStore):
             if event_type == "SportingEventCreated":
                 self._events = []
 
-            if event_type == "ObservationRemoved":
+            if event_type in ("ObservationRemoved", "SynchronizationPointRemoved"):
+                # It is possible for a SynchronizationPointRemoved event to match
+                # multiple StartPeriod events. This is because the id is "START_PERIOD:1" etc.
+                # When a SynchronizationPoint is removed, it will probably be re-added later with the same
+                # id. Make sure we only remove events BEFORE the SynchronizationPointRemoved event, otherwise
+                # we will remove events in the future that should not be removed.
                 event_to_remove_id = event_attributes["id"]
                 indexes_to_remove = []
                 for i, event_ in enumerate(self._events):
