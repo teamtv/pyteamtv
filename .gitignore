@@ -7,3 +7,4 @@ examples_private
 build
 dist
 *.egg*
+!.github
