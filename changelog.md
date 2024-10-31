@@ -1,3 +1,8 @@
+## 0.30.0 (2024-10-31)
+
+Feature:
+- Add livestream
+
 ## 0.29.0 (2024-09-26)
 
 Feature:
