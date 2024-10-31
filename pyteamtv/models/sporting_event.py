@@ -288,6 +288,43 @@ class SportingEvent(TeamTVObject):
             "POST", f"/sportingEvents/{self.sporting_event_id}/syncVideos"
         )
 
+    def create_livestream(
+        self,
+        livestream: dict,
+        tags: Optional[dict] = None,
+        description: Optional[str] = None,
+        skip_transcoding: Optional[bool] = False,
+    ) -> Video:
+        if not livestream:
+            raise Exception("You must pass livestream information")
+
+        videos = self.get_videos_by_tags(**tags)
+        if videos:
+            if videos[0].livestream == livestream:
+                video = videos[0]
+            else:
+                raise Exception(
+                    f"There is already an video but with different livestream configuration: {videos[0]}"
+                )
+        else:
+            video_id = self._requester.request(
+                "POST",
+                f"/sportingEvents/{self.sporting_event_id}/initVideoUpload",
+                {
+                    "files": [],
+                    "tags": tags or {},
+                    "description": description,
+                    "skipTranscoding": skip_transcoding,
+                    "livestream": livestream,
+                },
+            )
+
+            video = Video(
+                self._requester, self._requester.request("GET", f"/videos/{video_id}")
+            )
+
+        return video
+
     def upload_video(
         self,
         *file_paths: str,
@@ -322,21 +359,40 @@ class SportingEvent(TeamTVObject):
             else:
                 # We found an existing video with matching tags. Check the files
                 video = videos[0]
-                if len(video.parts) != len(file_paths):
-                    raise InputError(
-                        f"Number of parts doesn't match. You specified {len(file_paths)} files. "
-                        f"The existing video ({video.video_id}) has {len(video.parts)} parts"
-                    )
-
-                for i, filename in enumerate(file_paths):
-                    if os.path.getsize(filename) != video.parts[i]["fileSize"]:
-                        raise InputError(
-                            f"File size of '{filename}' doesn't match existing video ({video.video_id}). "
-                            f"Local size: {os.path.getsize(filename)}. Remote size: {video.parts[i]['fileSize']}"
+                if len(video.parts) == 0:
+                    # It is allowed to create a video first and later on add rest of the parts
+                    # We must add all parts
+                    for filename in file_paths:
+                        self._requester.request(
+                            "POST",
+                            f"/videos/{video.video_id}/parts",
+                            {
+                                "name": os.path.basename(filename),
+                                "size": os.path.getsize(filename),
+                            },
                         )
 
-                if video.is_upload_completed:
-                    return video
+                    # Refresh the video
+                    video = Video(
+                        self._requester,
+                        self._requester.request("GET", f"/videos/{video.video_id}"),
+                    )
+                else:
+                    if len(video.parts) != len(file_paths):
+                        raise InputError(
+                            f"Number of parts doesn't match. You specified {len(file_paths)} files. "
+                            f"The existing video ({video.video_id}) has {len(video.parts)} parts"
+                        )
+
+                    for i, filename in enumerate(file_paths):
+                        if os.path.getsize(filename) != video.parts[i]["fileSize"]:
+                            raise InputError(
+                                f"File size of '{filename}' doesn't match existing video ({video.video_id}). "
+                                f"Local size: {os.path.getsize(filename)}. Remote size: {video.parts[i]['fileSize']}"
+                            )
+
+                    if video.is_upload_completed:
+                        return video
 
                 video_id = video.video_id
 

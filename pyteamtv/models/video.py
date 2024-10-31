@@ -27,6 +27,10 @@ class Video(TeamTVObject):
         return self._skip_transcoding
 
     @property
+    def livestream(self):
+        return self._livestream
+
+    @property
     def is_upload_completed(self):
         return all(part["state"] != "new" for part in self._parts)
 
@@ -39,6 +43,7 @@ class Video(TeamTVObject):
         self._media_url = attributes.get("mediaUrl")
         self._state = attributes["state"]
         self._tags = attributes.get("tags", {})
+        self._livestream = attributes.get("livestream", {})
         self._skip_transcoding = attributes.get("skipTranscoding", False)
 
         super()._use_attributes(attributes)
