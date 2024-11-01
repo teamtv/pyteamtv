@@ -32,7 +32,9 @@ class Video(TeamTVObject):
 
     @property
     def is_upload_completed(self):
-        return all(part["state"] != "new" for part in self._parts)
+        return (
+            all(part["state"] != "new" for part in self._parts) and len(self._parts) > 0
+        )
 
     def __repr__(self):
         return f"<Video video_id={self.video_id} state={self.state}>"

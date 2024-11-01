@@ -362,6 +362,7 @@ class TestVideoUpload:
             tags=tags,
         )
         assert video_livestream.video_id == video_id
+        assert not video_livestream.is_upload_completed
 
         assert adapter.last_request.json() == {
             "description": "Test Training",
@@ -406,3 +407,4 @@ class TestVideoUpload:
         assert len(patch_adapter.last_request.body) == file_size
 
         assert video.video_id == video_id
+        assert not video.is_upload_completed

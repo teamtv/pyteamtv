@@ -1,3 +1,8 @@
+## 0.30.1 (2024-11-01)
+
+Bugfix:
+- is_upload_completed for livestream
+
 ## 0.30.0 (2024-10-31)
 
 Feature:
