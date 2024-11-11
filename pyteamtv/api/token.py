@@ -6,6 +6,8 @@ import requests
 
 TOKEN = requests.get("https://public-keys.teamtv.nl/app.teamtv.nl.pub").content
 
+DEFAULT_LEEWAY = 15 * 60
+
 
 def decode(jwt_token: str, app_id: Optional[str] = None, verify: bool = True):
     options = None
@@ -23,4 +25,5 @@ def decode(jwt_token: str, app_id: Optional[str] = None, verify: bool = True):
         verify=verify,
         audience=audience,
         options=options,
+        leeway=DEFAULT_LEEWAY,
     )
