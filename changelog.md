@@ -1,3 +1,13 @@
+## 0.30.3 (2024-11-18)
+
+Bugfix:
+- make api access lazy so it won't hit the api's on token validation
+
+## 0.30.2 (2024-11-11)
+
+Bugfix:
+- Fix for token check: add leeway
+
 ## 0.30.1 (2024-11-01)
 
 Bugfix:
