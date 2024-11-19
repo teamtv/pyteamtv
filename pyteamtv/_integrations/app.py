@@ -10,15 +10,34 @@ from pyteamtv.models.resource_group.team import TeamResourceGroup
 class App:
     def __init__(self, api):
         self.api = api
-        if isinstance(api, TeamTVUser):
-            self.membership_list = api.get_membership_list()
-            self.current_resource_group: Optional[TeamResourceGroup] = None
-        else:
-            self.membership_list = None
-            self.current_resource_group: TeamResourceGroup = api.get_resource_group()
+
+        self._current_resource_group: Optional[TeamResourceGroup] = None
+        self._membership_list = None
 
         self.observation_logs = dict()
         self.sporting_events = dict()
+
+    @property
+    def current_resource_group(self) -> Optional[TeamResourceGroup]:
+        if isinstance(self.api, TeamTVUser):
+            return None
+
+        if self._current_resource_group is None:
+            self._current_resource_group: TeamResourceGroup = (
+                self.api.get_resource_group()
+            )
+
+        return self._current_resource_group
+
+    @property
+    def membership_list(self):
+        if not isinstance(self.api, TeamTVUser):
+            return None
+
+        if self._membership_list is None:
+            self._membership_list = self.api.get_membership_list()
+
+        return self._membership_list
 
     def get_access_requester(self) -> AccessRequester:
         return self.api.get_access_requester()
