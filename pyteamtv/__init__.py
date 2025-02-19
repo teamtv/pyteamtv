@@ -17,4 +17,4 @@ if not __PYTEAMTV_SETUP__:
             raise Exception("'TEAMTV_API_TOKEN' environment variable is not set.")
 
 
-__version__ = "0.30.3"
+__version__ = "0.31.0"

@@ -25,4 +25,4 @@ class MatchState:
             return f"{minutes:02d}:{seconds:02d}"
 
     def __repr__(self):
-        return f"<MatchState time={self.time} score={self.home_score}-{self.away_score} active={self.period_active}>"
+        return f"<MatchState period={self.current_period} time={self.time} score={self.home_score}-{self.away_score} active={self.period_active}>"

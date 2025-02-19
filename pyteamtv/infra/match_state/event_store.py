@@ -14,6 +14,9 @@ class Event:
         if not self.attributes.get(event_attribute_key):
             self.attributes[event_attribute_key] = {}
 
+    def __repr__(self):
+        return f'<Event type="{self.event_type}" occurred_on="{self.occurred_on}" attributes={self.attributes}>'
+
 
 class EventStore(ABC):
     @abstractmethod

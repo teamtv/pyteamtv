@@ -9,6 +9,7 @@ from .line_up import LineUp
 from .list import List
 from .observation import Observation, DictObservation
 from .observation_log import ObservationLog
+from .team import Team
 from .teamtv_object import TeamTVObject
 from .video import Video
 
@@ -485,3 +486,15 @@ class MatchSportingEvent(SportingEvent):
         data = self._requester.request("GET", f"/lineUps/{self.line_up_id}")
         data["sportingEvent"] = self
         return LineUp(self._requester, data)
+
+    def get_home_team(self) -> Team:
+        return Team(
+            self._requester,
+            self._requester.request("GET", f"/teams/{self.home_team_id}"),
+        )
+
+    def get_away_team(self) -> Team:
+        return Team(
+            self._requester,
+            self._requester.request("GET", f"/teams/{self.away_team_id}"),
+        )
