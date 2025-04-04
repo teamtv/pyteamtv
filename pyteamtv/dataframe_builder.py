@@ -163,21 +163,24 @@ class DataframeBuilder:
                 if observation.code in ("START-POSSESSION", "POSSESSION"):
                     team = self.get_team_data(sporting_event, observation.attributes)
                     person = {}
-                    opponent_person = {}
+                    extra_persons = {}
                     possession_id = (
                         f"{sporting_event.sporting_event_id}:{possession_idx:05d}"
                     )
                     possession_idx += 1
                 else:
                     person = self._build_person_data(observation.attributes)
-                    opponent_person = self._build_person_data(
-                        observation.attributes, "opponent"
-                    )
+                    extra_persons = {}
+                    for key in ["opponent", "assist", "rebound"]:
+                        extra_person = self._build_person_data(
+                            observation.attributes, key
+                        )
+                        extra_persons.update(extra_person)
 
                 attributes = dict(possession_id=possession_id)
                 attributes.update(team)
                 attributes.update(person)
-                attributes.update(opponent_person)
+                attributes.update(extra_persons)
                 for k, v in observation.attributes.items():
                     if k not in skip_attributes:
                         attributes[k] = v
