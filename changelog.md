@@ -1,3 +1,19 @@
+## 0.33.0 (2025-10-01)
+
+Feature:
+- Add SportType enum for ResourceGroup
+- Add raw_attributes property to TeamTVObject
+
+## 0.32.0 (2025-04-04)
+
+Feature:
+- Add more person information to the DF
+
+## 0.31.0 (2025-02-19)
+
+Feature:
+- Add get_home_team + get_away_team to SportingEvent
+
 ## 0.30.3 (2024-11-18)
 
 Bugfix:
