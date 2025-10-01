@@ -9,6 +9,10 @@ class TeamTVObject(object):
         self._use_attributes(attributes)
 
     @property
+    def raw_attributes(self):
+        return self.__attributes
+
+    @property
     def metadata(self):
         return self._metadata
 
