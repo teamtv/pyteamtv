@@ -166,9 +166,10 @@ class DataframeBuilder:
                 else:
                     person = self._build_person_data(observation.attributes)
                     extra_persons = {}
-                    # Find all attributes ending with PersonId (except base personId)
+                    # Find all attributes ending with PersonId (capital P)
+                    # Note: "personId" (lowercase p) won't match, so it's handled separately above
                     for key in observation.attributes.keys():
-                        if key.endswith("PersonId") and key != "personId":
+                        if key.endswith("PersonId"):
                             # Extract prefix (e.g., "opponent" from "opponentPersonId")
                             prefix = key[:-8]  # Remove "PersonId"
                             extra_person = self._build_person_data(
