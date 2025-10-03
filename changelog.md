@@ -1,3 +1,11 @@
+## 0.34.0 (2025-10-03)
+
+Feature:
+- DataframeBuilder now dynamically expands all *PersonId fields instead of hardcoded list
+
+Bugfix:
+- Fix position=None handling in DataframeBuilder to prevent AttributeError
+
 ## 0.33.0 (2025-10-01)
 
 Feature:

@@ -136,11 +136,6 @@ class DataframeBuilder:
             "personId",
             "team",
             "person",
-            "inPerson",
-            "inPersonId",
-            "outPerson",
-            "outPersonId",
-            "opponentPersonId",
         }
 
         for observation_log in observation_logs:
@@ -171,11 +166,18 @@ class DataframeBuilder:
                 else:
                     person = self._build_person_data(observation.attributes)
                     extra_persons = {}
-                    for key in ["opponent", "assist", "rebound"]:
-                        extra_person = self._build_person_data(
-                            observation.attributes, key
-                        )
-                        extra_persons.update(extra_person)
+                    # Find all attributes ending with PersonId (except base personId)
+                    for key in observation.attributes.keys():
+                        if key.endswith("PersonId") and key != "personId":
+                            # Extract prefix (e.g., "opponent" from "opponentPersonId")
+                            prefix = key[:-8]  # Remove "PersonId"
+                            extra_person = self._build_person_data(
+                                observation.attributes, prefix
+                            )
+                            extra_persons.update(extra_person)
+                            # Add these to skip_attributes dynamically
+                            skip_attributes.add(key)
+                            skip_attributes.add(f"{prefix}Person")
 
                 attributes = dict(possession_id=possession_id)
                 attributes.update(team)
@@ -190,7 +192,7 @@ class DataframeBuilder:
                         attributes["angle"], attributes["distance"]
                     )
 
-                if "position" in attributes:
+                if "position" in attributes and attributes["position"]:
                     attributes["position"] = attributes["position"].split(":")[0]
 
                 observation_dict = dict(
