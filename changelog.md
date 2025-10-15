@@ -1,3 +1,8 @@
+## 0.35.0 (2025-10-15)
+
+Feature:
+- Add to_kloppy to return a CodeDataset 
+
 ## 0.34.0 (2025-10-03)
 
 Feature:
