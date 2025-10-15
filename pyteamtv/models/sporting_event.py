@@ -1,7 +1,7 @@
 import logging
 import os
-from datetime import datetime
-from typing import Optional, Union
+from datetime import datetime, timedelta
+from typing import Optional, Union, Dict, Any
 
 from .bulk_observation import BulkObservation
 from .event_stream import EventStream
@@ -158,6 +158,10 @@ class SportingEvent(TeamTVObject):
         return self._type
 
     @property
+    def outcome(self):
+        return self._outcome
+
+    @property
     def main_video_id(self) -> Optional[str]:
         if self._video_ids:
             return self._video_ids[0]
@@ -288,6 +292,178 @@ class SportingEvent(TeamTVObject):
         return self._requester.request(
             "POST", f"/sportingEvents/{self.sporting_event_id}/syncVideos"
         )
+
+    def to_kloppy(
+        self,
+        video_id: Optional[str] = None,
+        clock_id: Optional[str] = None,
+        input_format: str = "sportscode",
+        parse_options: Optional[Dict[str, Any]] = None,
+    ):
+        """
+        Convert SportingEvent observations to a kloppy Dataset.
+
+        Args:
+            video_id: Optional video ID to use for getting observations. If not specified, uses main video.
+            clock_id: Optional clock ID to use. If not specified, uses the clock associated with the video.
+            input_format: Format to emulate (currently only "sportscode" is supported)
+            parse_options: Dictionary with parsing options:
+                - period_start_code: Code that marks period start (default: "start")
+                - period_end_code: Code that marks period end (default: "eind")
+
+        Returns:
+            A kloppy Dataset object
+
+        Raises:
+            ImportError: If kloppy is not installed
+            ValueError: If input_format is not supported
+        """
+        try:
+            from kloppy.domain import (
+                CodeDataset,
+                Code,
+                Period,
+                Metadata,
+                Provider,
+                DatasetFlag,
+                Score,
+                Orientation,
+            )
+        except ImportError:
+            raise ImportError(
+                "kloppy is required for to_kloppy(). "
+                "Install it with: pip install pyteamtv[kloppy]"
+            )
+
+        if input_format != "sportscode":
+            raise ValueError(
+                f"Unsupported input_format: {input_format}. Only 'sportscode' is currently supported."
+            )
+
+        # Set default parse options
+        if parse_options is None:
+            parse_options = {}
+        period_start_code = parse_options.get("period_start_code", "start").lower()
+        period_end_code = parse_options.get("period_end_code", "eind").lower()
+
+        # Get observation log
+        observation_log = self.get_observation_log(video_id=video_id, clock_id=clock_id)
+
+        # Create a list of observations sorted by trigger time and convert to Code objects
+        observations = sorted(list(observation_log), key=lambda obs: obs.trigger_time)
+
+        # Create initial Code objects (without period assignment)
+        codes = []
+        for observation in observations:
+            # Parse labels from TeamTV format to kloppy format
+            # Supports three formats: {"name": "value"}, {"name": True}, {"name": ["value1", "value2"]}
+            labels = {}
+            if observation.attributes and "labels" in observation.attributes:
+                for label in observation.attributes["labels"]:
+                    text = label.get("text", "")
+                    group = label.get("group")
+                    if group is None:
+                        labels[text] = True
+                    else:
+                        # If group already exists, convert to list format
+                        if group in labels:
+                            if isinstance(labels[group], list):
+                                labels[group].append(text)
+                            else:
+                                labels[group] = [labels[group], text]
+                        else:
+                            labels[group] = text
+
+            code_obj = Code(
+                period=None,  # Will be assigned in Step 2
+                code_id=observation.observation_id,
+                code=observation.attributes.get("code", ""),
+                timestamp=timedelta(seconds=observation.start_time),
+                end_timestamp=timedelta(seconds=observation.end_time),
+                labels=labels,
+                ball_state=None,
+                ball_owning_team=None,
+                statistics=[],
+            )
+            codes.append(code_obj)
+
+        # Step 1: Store period start and end timestamps
+        periods = []
+        current_period = None
+
+        for code_obj in codes:
+            if code_obj.code.lower() == period_start_code:
+                if current_period:
+                    current_period["end"] = code_obj.timestamp - timedelta(
+                        seconds=0.001
+                    )
+
+                current_period = {
+                    "id": len(periods) + 1,
+                    "start": code_obj.timestamp,
+                    "end": None,
+                }
+                periods.append(current_period)
+
+            elif code_obj.code.lower() == period_end_code and current_period:
+                current_period["end"] = code_obj.timestamp
+
+        # Create period objects for metadata
+        periods = [
+            Period(id=p["id"], start_timestamp=p["start"], end_timestamp=p["end"])
+            for p in periods
+        ]
+
+        # Step 2: Assign periods based on timestamps
+        for code_obj in codes:
+            for period in periods:
+                if period.start_timestamp <= code_obj.timestamp and (
+                    period.end_timestamp is None
+                    or code_obj.timestamp <= period.end_timestamp
+                ):
+                    code_obj.period = period
+                    code_obj.timestamp -= period.start_timestamp
+                    break  # Stop checking once the correct period is found
+
+        # Get outcome data if available (for MatchSportingEvent)
+        outcome = self.outcome
+        home_score = 0
+        away_score = 0
+        if outcome and "score" in outcome:
+            home_score = outcome["score"].get("home", 0)
+            away_score = outcome["score"].get("away", 0)
+
+        if not periods:
+            periods = [
+                Period(
+                    id=1,
+                    start_timestamp=timedelta(seconds=0),
+                    end_timestamp=(
+                        max(code.end_timestamp for code in codes)
+                        if codes
+                        else timedelta(seconds=0)
+                    ),
+                )
+            ]
+
+        metadata = Metadata(
+            teams=[],
+            periods=periods,
+            pitch_dimensions=None,
+            score=Score(home=home_score, away=away_score),
+            frame_rate=0.0,
+            orientation=Orientation.NOT_SET,
+            flags=~(DatasetFlag.BALL_OWNING_TEAM | DatasetFlag.BALL_STATE),
+            provider=Provider.OTHER,
+            coordinate_system=None,
+        )
+
+        dataset = CodeDataset(
+            metadata=metadata,
+            records=codes,
+        )
+
+        return dataset
 
     def create_livestream(
         self,
@@ -447,6 +623,7 @@ class SportingEvent(TeamTVObject):
             attributes["scheduledAt"].replace("Z", "+00:00")
         )
         self._type = attributes["type"]
+        self._outcome = attributes.get("outcome")
 
         super()._use_attributes(attributes)
 

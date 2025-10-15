@@ -44,8 +44,9 @@ def setup_package():
             "tuspy>=1.0.0",
         ],
         extras_require={
-            "test": ["pytest", "pandas>=1.0.0", "requests-mock==1.10.0"],
+            "test": ["pytest", "pandas>=1.0.0", "requests-mock==1.10.0", "kloppy"],
             "cache": ["requests-cache>=0.9.7"],
+            "kloppy": ["kloppy>=3.0.0"],
         },
     )
 
