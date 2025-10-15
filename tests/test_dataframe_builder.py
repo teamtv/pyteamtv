@@ -50,40 +50,6 @@ def test_build_records_with_dynamic_person_ids(requester, current_team, requests
         },
     )
 
-    observations = [
-        Observation(
-            requester,
-            {
-                "observationId": "obs-1",
-                "code": "START-POSSESSION",
-                "startTime": 0.0,
-                "triggerTime": 0.0,
-                "endTime": 1.0,
-                "clockId": "clock-1",
-                "description": "Start",
-                "attributes": {"teamId": "team-1"},
-            },
-        ),
-        Observation(
-            requester,
-            {
-                "observationId": "obs-2",
-                "code": "SHOT",
-                "startTime": 1.0,
-                "triggerTime": 1.5,
-                "endTime": 2.0,
-                "clockId": "clock-1",
-                "description": "Shot",
-                "attributes": {
-                    "personId": "person-1",
-                    "assistPersonId": "person-2",
-                    "keeperPersonId": "person-3",
-                    "position": None,
-                },
-            },
-        ),
-    ]
-
     requests_mock.get(
         "https://fake-url/observations",
         json=[
