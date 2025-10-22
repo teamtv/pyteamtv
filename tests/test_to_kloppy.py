@@ -128,8 +128,8 @@ def test_to_kloppy(requester, requests_mock):
     assert dataset.metadata.periods[1].id == 2
 
     # Check that records have periods assigned and timestamps are normalized
-    # We have 8 observations in the dataset (9 total minus 1 duplicate that gets filtered)
-    assert len(dataset.records) == 6
+    # We have 8 observations in the dataset
+    assert len(dataset.records) == 8
 
     # Find the BS2 TEAM1 record (should be after the 2 start codes)
     bs2_record = [r for r in dataset.records if r.code == "BS2 TEAM1"][0]
