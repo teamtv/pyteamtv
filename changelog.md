@@ -1,3 +1,11 @@
+## 0.36.0 (2025-10-22)
+
+Feature:
+- Remove duplicate start/end tags
+
+Bugfix:
+- Streamlit query string isn't experimental anymore
+
 ## 0.35.0 (2025-10-15)
 
 Feature:
