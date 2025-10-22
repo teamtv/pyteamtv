@@ -390,9 +390,17 @@ class SportingEvent(TeamTVObject):
         # Step 1: Store period start and end timestamps
         periods = []
         current_period = None
+        last_start_timestamp = None
+        last_end_timestamp = None
 
         for code_obj in codes:
             if code_obj.code.lower() == period_start_code:
+                # Skip duplicate START codes with same timestamp
+                if last_start_timestamp == code_obj.timestamp:
+                    continue
+
+                last_start_timestamp = code_obj.timestamp
+
                 if current_period:
                     current_period["end"] = code_obj.timestamp - timedelta(
                         seconds=0.001
@@ -406,6 +414,11 @@ class SportingEvent(TeamTVObject):
                 periods.append(current_period)
 
             elif code_obj.code.lower() == period_end_code and current_period:
+                # Skip duplicate EIND codes with same timestamp
+                if last_end_timestamp == code_obj.timestamp:
+                    continue
+
+                last_end_timestamp = code_obj.timestamp
                 current_period["end"] = code_obj.timestamp
 
         # Create period objects for metadata
