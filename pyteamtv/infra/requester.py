@@ -55,7 +55,14 @@ class Requester(object):
         headers = self.headers
         headers["Authorization"] = f"Bearer {self.jwt_token}"
         headers["User-Agent"] = f"pyteamtv {pyteamtv.__version__}"
-        logger.debug(f"Sending {method} request to {url} - {self.headers}")
+
+        # Log headers with redacted authorization
+        safe_headers = {
+            k: ("REDACTED" if k.lower() == "authorization" else v)
+            for k, v in headers.items()
+        }
+        logger.debug(f"Sending {method} request to {url} - {safe_headers}")
+
         response = self.session.request(
             method,
             self._base_url + url,
@@ -65,7 +72,18 @@ class Requester(object):
         )
         took = time.time() - start
         logger.debug(f"Request took: {took * 1000:.2f}ms")
-        response.raise_for_status()
+
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as e:
+            # Enhance the exception with request and response details
+            error_msg = (
+                f"HTTP {response.status_code} Error: {e}\n"
+                f"Request: {method} {self._base_url + url}\n"
+                f"Request Body: {input_}\n"
+                f"Response Content: {response.text}"
+            )
+            raise requests.HTTPError(error_msg, response=response) from e
 
         return response.json()
 
