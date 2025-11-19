@@ -1,3 +1,8 @@
+## 0.37.0 (2025-10-30)
+
+Bugfix:
+- Better error message when a request fails
+
 ## 0.36.0 (2025-10-22)
 
 Feature:

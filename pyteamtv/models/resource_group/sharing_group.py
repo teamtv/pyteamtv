@@ -1,11 +1,20 @@
 from pyteamtv.models.sharing_group import SharingGroup
 from . import _ResourceGroup
 
-from .capabilities import _HasTeamsMixin, _HasSportingEventsMixin, _HasVideosMixin
+from .capabilities import (
+    _HasTeamsMixin,
+    _HasSportingEventsMixin,
+    _HasVideosMixin,
+    _HasPersonsMixin,
+)
 
 
 class SharingGroupResourceGroup(
-    _ResourceGroup, _HasTeamsMixin, _HasSportingEventsMixin, _HasVideosMixin
+    _ResourceGroup,
+    _HasTeamsMixin,
+    _HasPersonsMixin,
+    _HasSportingEventsMixin,
+    _HasVideosMixin,
 ):
     def get_sharing_group(self):
         return SharingGroup(
