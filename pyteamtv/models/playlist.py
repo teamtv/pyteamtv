@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from pyteamtv.infra.requester import Requester
 from pyteamtv.models.teamtv_object import TeamTVObject
 
@@ -106,7 +106,7 @@ class Playlist(TeamTVObject):
         return self._poster
 
     @property
-    def video_fragments(self) -> list[VideoFragment]:
+    def video_fragments(self) -> List[VideoFragment]:
         return self._video_fragments
 
     @property
@@ -145,7 +145,7 @@ class Playlist(TeamTVObject):
 
         return response
 
-    def set_video_fragments(self, video_fragments: list[VideoFragment]) -> str:
+    def set_video_fragments(self, video_fragments: List[VideoFragment]) -> str:
         """
         Set all video fragments at once (replaces existing fragments).
 
