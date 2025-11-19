@@ -1,3 +1,11 @@
+## 0.38.0 (2025-11-19)
+
+Feature:
+- Add Playlist model with full CRUD operations for managing video fragments
+- Add standalone video upload functionality (upload_video) that doesn't require a sporting event
+- Add playlist capabilities to TeamResourceGroup (get_playlists, get_playlist, create_playlist)
+- Add persons mixin to SharingGroupResourceGroup
+
 ## 0.37.0 (2025-10-30)
 
 Bugfix:
