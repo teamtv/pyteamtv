@@ -5,6 +5,7 @@ from .capabilities import (
     _HasSportingEventsMixin,
     _HasVideosMixin,
     _HasPersonsMixin,
+    _HasPlaylistsMixin,
 )
 
 
@@ -14,5 +15,6 @@ class TeamResourceGroup(
     _HasSportingEventsMixin,
     _HasVideosMixin,
     _HasPersonsMixin,
+    _HasPlaylistsMixin,
 ):
     pass

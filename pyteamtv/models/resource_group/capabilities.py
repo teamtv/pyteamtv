@@ -10,6 +10,7 @@ from ..team import Team
 from ..video import Video
 from ..exercise import Exercise
 from ..app_storage import AppStorageTokens
+from ..playlist import Playlist
 
 
 def iso8601(datetime_: datetime):
@@ -107,6 +108,83 @@ class _HasVideosMixin(BaseMixin):
 
         return Video(self._requester, data)
 
+    def upload_video(
+        self,
+        *file_paths: str,
+        name: str = "",
+        tags: Optional[dict] = None,
+        skip_transcoding: bool = False,
+        chunks_per_request: int = 1,
+        retries: int = 60,
+        retry_delay: int = 30,
+    ) -> Video:
+        """
+        Upload a video without requiring a sporting event.
+
+        Args:
+            file_paths: Path(s) to video file(s)
+            name: Optional video name/description
+            tags: Optional tags dictionary
+            skip_transcoding: Skip video transcoding (default: False)
+            chunks_per_request: Number of chunks per TUS request (default: 1)
+            retries: Number of upload retries (default: 60)
+            retry_delay: Delay between retries in seconds (default: 30)
+
+        Returns:
+            Video object
+        """
+        import os
+        from tusclient.uploader import Uploader
+
+        chunks_per_request = int(chunks_per_request)
+        if chunks_per_request < 1:
+            chunks_per_request = 1
+
+        # Prepare files metadata
+        files = []
+        for file_path in file_paths:
+            files.append(
+                {
+                    "name": os.path.basename(file_path),
+                    "size": os.path.getsize(file_path),
+                }
+            )
+
+        # Create video via standalone endpoint
+        video_data = self._requester.request(
+            "POST",
+            "/videos",
+            {
+                "name": name,
+                "files": files,
+                "tags": tags or {},
+                "skipTranscoding": skip_transcoding,
+            },
+        )
+
+        video_id = video_data["videoId"]
+
+        # Get video object with TUS upload URLs
+        video = Video(
+            self._requester, self._requester.request("GET", f"/videos/{video_id}")
+        )
+
+        # Upload each part using TUS
+        for i, part in enumerate(video.parts):
+            uploader = Uploader(
+                file_paths[i],
+                url=part["tusUploadUrl"],
+                chunk_size=chunks_per_request * 25 * 1024 * 1024,
+                retries=retries,
+                retry_delay=retry_delay,
+            )
+            uploader.upload()
+
+        # Return refreshed video
+        return Video(
+            self._requester, self._requester.request("GET", f"/videos/{video_id}")
+        )
+
 
 class _HasPersonsMixin(BaseMixin):
     def get_persons(self):
@@ -169,3 +247,41 @@ class _HasSharingGroupResourceGroupsMixin(BaseMixin):
             ),
         )
         return factory(self._requester, data)
+
+
+class _HasPlaylistsMixin(BaseMixin):
+    def get_playlists(self):
+        """Get all playlists for the current context."""
+        return List(Playlist, self._requester, "GET", "/playlists")
+
+    def get_playlist(self, playlist_id: str):
+        """Get a specific playlist by ID."""
+        data = self._requester.request("GET", f"/playlists/{playlist_id}")
+        return Playlist(self._requester, data)
+
+    def create_playlist(
+        self,
+        name: str,
+        description: str = "",
+        permissions: Optional[list] = None,
+    ):
+        """
+        Create a new playlist.
+
+        Args:
+            name: Playlist name
+            description: Optional description
+            permissions: Optional permissions list (default: ['view:all'])
+
+        Returns:
+            Created Playlist object
+        """
+        if permissions is None:
+            permissions = ["view:all"]
+
+        data = self._requester.request(
+            "POST",
+            "/playlists",
+            {"name": name, "description": description, "permissions": permissions},
+        )
+        return Playlist(self._requester, data)
