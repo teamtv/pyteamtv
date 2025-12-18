@@ -11,6 +11,7 @@ from ..video import Video
 from ..exercise import Exercise
 from ..app_storage import AppStorageTokens
 from ..playlist import Playlist
+from ..custom_tag import CustomTag
 
 
 def iso8601(datetime_: datetime):
@@ -285,3 +286,14 @@ class _HasPlaylistsMixin(BaseMixin):
             {"name": name, "description": description, "permissions": permissions},
         )
         return Playlist(self._requester, data)
+
+
+class _HasCustomTagsMixin(BaseMixin):
+    def get_custom_tags(self):
+        """Get all custom tags for the current context."""
+        return List(CustomTag, self._requester, "GET", "/customTags")
+
+    def get_custom_tag(self, custom_tag_id: str):
+        """Get a specific custom tag by ID."""
+        data = self._requester.request("GET", f"/customTags/{custom_tag_id}")
+        return CustomTag(self._requester, data)
