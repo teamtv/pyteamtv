@@ -297,3 +297,70 @@ class _HasCustomTagsMixin(BaseMixin):
         """Get a specific custom tag by ID."""
         data = self._requester.request("GET", f"/customTags/{custom_tag_id}")
         return CustomTag(self._requester, data)
+
+
+class _NamespacedCatalog:
+    """Thin wrapper around RestCatalog that auto-prefixes a default namespace."""
+
+    def __init__(self, catalog, namespace: str):
+        self._catalog = catalog
+        self._namespace = namespace
+
+    def load_table(self, name: str):
+        qualified = name if "." in name else f"{self._namespace}.{name}"
+        return self._catalog.load_table(qualified)
+
+    def list_tables(self):
+        return self._catalog.list_tables(self._namespace)
+
+    def list_namespaces(self):
+        return self._catalog.list_namespaces()
+
+    def __getattr__(self, name):
+        return getattr(self._catalog, name)
+
+
+class _HasIcebergCatalogMixin(BaseMixin):
+    def get_iceberg_catalog(self, catalog_url: str = None):
+        """
+        Return a catalog scoped to this resource group's namespace.
+
+        Tables can be loaded by name without qualifying:
+            catalog = team.get_iceberg_catalog()
+            df = catalog.load_table("observations").scan().to_polars()
+
+        URL resolution order:
+            1. catalog_url argument
+            2. TEAMTV_CATALOG_URL env var
+            3. Service discovery via /users/me/services ("data" service)
+            4. Fallback: http://localhost:8001
+        """
+        import os
+
+        from pyiceberg.catalog.rest import RestCatalog
+
+        url = catalog_url or os.environ.get("TEAMTV_CATALOG_URL")
+
+        if not url:
+            url = self._discover_catalog_url() or "http://localhost:8001"
+
+        catalog = RestCatalog(
+            "teamtv",
+            **{
+                "uri": url,
+                "credential": self._requester.jwt_token,
+            },
+        )
+        return _NamespacedCatalog(catalog, self.resource_group_id)
+
+    def _discover_catalog_url(self) -> Optional[str]:
+        try:
+            from pyteamtv.api.user import TeamTVUser
+
+            user = TeamTVUser(self._requester.jwt_token)
+            services = user.get_services()
+            if services.data:
+                return services.data.url
+        except Exception:
+            pass
+        return None
