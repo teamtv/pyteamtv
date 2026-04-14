@@ -342,7 +342,8 @@ class _HasIcebergCatalogMixin(BaseMixin):
         url = catalog_url or os.environ.get("TEAMTV_CATALOG_URL")
 
         if not url:
-            url = self._discover_catalog_url() or "http://localhost:8001"
+            base = self._discover_catalog_url()
+            url = f"{base}/catalog" if base else "http://localhost:8001/catalog"
 
         catalog = RestCatalog(
             "teamtv",
