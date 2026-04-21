@@ -21,6 +21,7 @@ def setup_package():
         author_email="info@koenvossen.nl",
         url="https://github.com/teamtv/pyteamtv",
         packages=setuptools.find_packages(exclude=["tests"]),
+        package_data={"pyteamtv": ["llms.txt"]},
         license="GPL-3",
         description="API for TeamTV Platform",
         long_description=readme,
