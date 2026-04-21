@@ -323,17 +323,58 @@ class _NamespacedCatalog:
 class _HasIcebergCatalogMixin(BaseMixin):
     def get_iceberg_catalog(self, catalog_url: str = None):
         """
-        Return a catalog scoped to this resource group's namespace.
+        Return an Iceberg catalog scoped to this resource group.
 
-        Tables can be loaded by name without qualifying:
+        The catalog provides fast access to pre-materialised observation
+        data via Apache Iceberg. Use this instead of fetching observations
+        per match via the platform API.
+
+        Example — load all observations into a Polars DataFrame::
+
+            from pyteamtv import get_team
+
+            team = get_team("My Team")
             catalog = team.get_iceberg_catalog()
             df = catalog.load_table("observations").scan().to_polars()
 
-        URL resolution order:
-            1. catalog_url argument
-            2. TEAMTV_CATALOG_URL env var
-            3. Service discovery via /users/me/services ("data" service)
-            4. Fallback: http://localhost:8001
+        Example — filter to one match::
+
+            from pyiceberg.expressions import EqualTo
+            df = catalog.load_table("observations").scan(
+                row_filter=EqualTo("sporting_event_name", "Team A - Team B"),
+            ).to_polars()
+
+        Example — use with DuckDB::
+
+            table = catalog.load_table("observations")
+            con = table.scan().to_duckdb("observations")
+            con.sql("SELECT code, COUNT(*) FROM observations GROUP BY code").show()
+
+        Available columns in the ``observations`` table:
+
+        - ``sporting_event_id``, ``sporting_event_name``,
+          ``sporting_event_scheduled_at`` — match identifiers
+        - ``observation_id``, ``code``, ``description`` — observation data
+        - ``start_time``, ``end_time``, ``clock_id`` — timing
+        - ``team_id``, ``team_name``, ``team_ground`` — team context
+        - ``person_id``, ``first_name``, ``last_name``, ``full_name``,
+          ``number`` — primary person
+        - ``attributes`` — raw observation attributes as JSON string
+        - ``persons`` — additional persons (e.g. opponent) as JSON string
+        - ``source_resource_group_id``, ``source_resource_group_name``,
+          ``source_tenant_id`` — data provenance
+        - ``enrichment``, ``enrichment_version`` — computed fields (JSON)
+
+        Args:
+            catalog_url: Override the catalog REST API URL.
+                         Auto-discovered from the platform by default.
+
+        Returns:
+            A catalog object. Call ``.load_table("observations")`` on it.
+
+        Requires:
+            ``pyiceberg`` — install with ``pip install pyiceberg[s3fs]``
+            or ``uv add pyiceberg[s3fs]``.
         """
         import os
 
