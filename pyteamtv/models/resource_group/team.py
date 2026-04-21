@@ -7,7 +7,7 @@ from .capabilities import (
     _HasPersonsMixin,
     _HasPlaylistsMixin,
     _HasCustomTagsMixin,
-    _HasIcebergCatalogMixin,
+    _HasCatalogMixin,
 )
 
 
@@ -19,6 +19,6 @@ class TeamResourceGroup(
     _HasPersonsMixin,
     _HasPlaylistsMixin,
     _HasCustomTagsMixin,
-    _HasIcebergCatalogMixin,
+    _HasCatalogMixin,
 ):
     pass

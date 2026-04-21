@@ -320,29 +320,28 @@ class _NamespacedCatalog:
         return getattr(self._catalog, name)
 
 
-class _HasIcebergCatalogMixin(BaseMixin):
-    def get_iceberg_catalog(self, catalog_url: str = None):
+class _HasCatalogMixin(BaseMixin):
+    def get_catalog(self, catalog_url: str = None):
         """
-        Return an Iceberg catalog scoped to this resource group.
+        Return a data catalog scoped to this resource group.
 
         The catalog provides fast access to pre-materialised observation
-        data via Apache Iceberg. Use this instead of fetching observations
-        per match via the platform API.
+        data. Use this instead of fetching observations per match.
 
         Example — load all observations into a Polars DataFrame::
 
             from pyteamtv import get_team
+            import polars as pl
 
             team = get_team("My Team")
-            catalog = team.get_iceberg_catalog()
+            catalog = team.get_catalog()
             df = catalog.load_table("observations").scan().to_polars()
 
-        Example — filter to one match::
+            # Filter to shots
+            shots = df.filter(pl.col("code") == "SHOT")
 
-            from pyiceberg.expressions import EqualTo
-            df = catalog.load_table("observations").scan(
-                row_filter=EqualTo("sporting_event_name", "Team A - Team B"),
-            ).to_polars()
+            # Group by player
+            shots.group_by("full_name").len().sort("len", descending=True)
 
         Example — use with DuckDB::
 

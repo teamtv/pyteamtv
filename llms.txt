@@ -1,0 +1,31 @@
+# pyteamtv — AI tool guidance
+
+## What this package does
+Python SDK for the TeamTV sports platform. Provides access to teams,
+sporting events, observation data, and videos.
+
+## Recommended pattern for data analysis
+Use `team.get_catalog()` — NOT per-match API calls.
+
+```python
+from pyteamtv import get_team
+import polars as pl
+
+team = get_team("Team Name")  # requires TEAMTV_API_TOKEN env var
+catalog = team.get_catalog()
+df = catalog.load_table("observations").scan().to_polars()
+
+# All standard Polars operations work
+shots = df.filter(pl.col("code") == "SHOT")
+```
+
+## Dependencies needed
+pyteamtv, pyiceberg[s3fs], polars
+
+## Key columns in the observations table
+sporting_event_id, sporting_event_name, code, description,
+start_time, end_time, team_id, team_name, team_ground,
+person_id, first_name, last_name, full_name, attributes (JSON)
+
+## Worked example
+See pyteamtv/examples/analyze_observations.py in the installed package.

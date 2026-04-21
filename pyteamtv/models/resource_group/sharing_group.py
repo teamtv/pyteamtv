@@ -6,7 +6,7 @@ from .capabilities import (
     _HasSportingEventsMixin,
     _HasVideosMixin,
     _HasPersonsMixin,
-    _HasIcebergCatalogMixin,
+    _HasCatalogMixin,
 )
 
 
@@ -16,7 +16,7 @@ class SharingGroupResourceGroup(
     _HasPersonsMixin,
     _HasSportingEventsMixin,
     _HasVideosMixin,
-    _HasIcebergCatalogMixin,
+    _HasCatalogMixin,
 ):
     def get_sharing_group(self):
         return SharingGroup(

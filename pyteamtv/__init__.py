@@ -10,13 +10,13 @@ Quick start::
 Working with observation data
 -----------------------------
 
-Use ``get_iceberg_catalog()`` to query observation data. This returns
+Use ``get_catalog()`` to query observation data. This returns
 pre-materialised data via Apache Iceberg — fast, filterable, and ready
 for analysis with Polars, DuckDB, or Pandas.
 
 ::
 
-    catalog = team.get_iceberg_catalog()
+    catalog = team.get_catalog()
     df = catalog.load_table("observations").scan().to_polars()
 
     # Filter, aggregate, join — standard Polars/Pandas/DuckDB workflows
@@ -52,11 +52,11 @@ if not __PYTEAMTV_SETUP__:
 
         Requires the ``TEAMTV_API_TOKEN`` environment variable to be set.
 
-        For data analysis, use ``team.get_iceberg_catalog()`` to access
+        For data analysis, use ``team.get_catalog()`` to access
         observation data efficiently::
 
             team = get_team("My Team")
-            catalog = team.get_iceberg_catalog()
+            catalog = team.get_catalog()
             df = catalog.load_table("observations").scan().to_polars()
         """
         if "TEAMTV_API_TOKEN" in os.environ:
