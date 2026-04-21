@@ -75,3 +75,9 @@ class TeamTVUser(object):
         self, tenant_id: Optional[str] = None, type_: Optional[str] = None
     ) -> List[Membership]:
         return self.get_membership_list().get_memberships(tenant_id, type_)
+
+    def get_services(self):
+        from pyteamtv.models.services import Services
+
+        data = self._requester.request("GET", "/users/me/services")
+        return Services(data)

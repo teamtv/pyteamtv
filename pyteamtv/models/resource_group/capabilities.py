@@ -297,3 +297,112 @@ class _HasCustomTagsMixin(BaseMixin):
         """Get a specific custom tag by ID."""
         data = self._requester.request("GET", f"/customTags/{custom_tag_id}")
         return CustomTag(self._requester, data)
+
+
+class _NamespacedCatalog:
+    """Thin wrapper around RestCatalog that auto-prefixes a default namespace."""
+
+    def __init__(self, catalog, namespace: str):
+        self._catalog = catalog
+        self._namespace = namespace
+
+    def load_table(self, name: str):
+        qualified = name if "." in name else f"{self._namespace}.{name}"
+        return self._catalog.load_table(qualified)
+
+    def list_tables(self):
+        return self._catalog.list_tables(self._namespace)
+
+    def list_namespaces(self):
+        return self._catalog.list_namespaces()
+
+    def __getattr__(self, name):
+        return getattr(self._catalog, name)
+
+
+class _HasIcebergCatalogMixin(BaseMixin):
+    def get_iceberg_catalog(self, catalog_url: str = None):
+        """
+        Return an Iceberg catalog scoped to this resource group.
+
+        The catalog provides fast access to pre-materialised observation
+        data via Apache Iceberg. Use this instead of fetching observations
+        per match via the platform API.
+
+        Example — load all observations into a Polars DataFrame::
+
+            from pyteamtv import get_team
+
+            team = get_team("My Team")
+            catalog = team.get_iceberg_catalog()
+            df = catalog.load_table("observations").scan().to_polars()
+
+        Example — filter to one match::
+
+            from pyiceberg.expressions import EqualTo
+            df = catalog.load_table("observations").scan(
+                row_filter=EqualTo("sporting_event_name", "Team A - Team B"),
+            ).to_polars()
+
+        Example — use with DuckDB::
+
+            table = catalog.load_table("observations")
+            con = table.scan().to_duckdb("observations")
+            con.sql("SELECT code, COUNT(*) FROM observations GROUP BY code").show()
+
+        Available columns in the ``observations`` table:
+
+        - ``sporting_event_id``, ``sporting_event_name``,
+          ``sporting_event_scheduled_at`` — match identifiers
+        - ``observation_id``, ``code``, ``description`` — observation data
+        - ``start_time``, ``end_time``, ``clock_id`` — timing
+        - ``team_id``, ``team_name``, ``team_ground`` — team context
+        - ``person_id``, ``first_name``, ``last_name``, ``full_name``,
+          ``number`` — primary person
+        - ``attributes`` — raw observation attributes as JSON string
+        - ``persons`` — additional persons (e.g. opponent) as JSON string
+        - ``source_resource_group_id``, ``source_resource_group_name``,
+          ``source_tenant_id`` — data provenance
+        - ``enrichment``, ``enrichment_version`` — computed fields (JSON)
+
+        Args:
+            catalog_url: Override the catalog REST API URL.
+                         Auto-discovered from the platform by default.
+
+        Returns:
+            A catalog object. Call ``.load_table("observations")`` on it.
+
+        Requires:
+            ``pyiceberg`` — install with ``pip install pyiceberg[s3fs]``
+            or ``uv add pyiceberg[s3fs]``.
+        """
+        import os
+
+        from pyiceberg.catalog.rest import RestCatalog
+
+        url = catalog_url or os.environ.get("TEAMTV_CATALOG_URL")
+
+        if not url:
+            base = self._discover_catalog_url()
+            url = f"{base}/catalog" if base else "http://localhost:8001/catalog"
+
+        catalog = RestCatalog(
+            "teamtv",
+            **{
+                "uri": url,
+                "credential": self._requester.jwt_token,
+            },
+        )
+        return _NamespacedCatalog(catalog, self.resource_group_id)
+
+    def _discover_catalog_url(self) -> Optional[str]:
+        try:
+            from pyteamtv.api.user import TeamTVUser
+
+            user = TeamTVUser(self._requester.jwt_token)
+            services = user.get_services()
+            if services.data:
+                return services.data.url
+        except Exception:
+            pass
+        return None
