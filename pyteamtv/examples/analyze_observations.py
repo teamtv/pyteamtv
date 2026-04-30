@@ -21,7 +21,7 @@ team = get_team("My Team")  # change to your team name
 catalog = team.get_catalog()
 
 # 2. Load all observations into a Polars DataFrame
-df = catalog.load_table("observations").scan().to_polars()
+df = catalog.load_table("observations", as_polars=True).collect()
 print(
     f"Loaded {len(df)} observations across {df['sporting_event_name'].n_unique()} matches"
 )
