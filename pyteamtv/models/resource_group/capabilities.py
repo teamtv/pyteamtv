@@ -306,9 +306,20 @@ class _NamespacedCatalog:
         self._catalog = catalog
         self._namespace = namespace
 
-    def load_table(self, name: str):
+    def load_table(self, name: str, as_polars: bool = False):
         qualified = name if "." in name else f"{self._namespace}.{name}"
-        return self._catalog.load_table(qualified)
+        table = self._catalog.load_table(qualified)
+        if as_polars:
+            import polars
+
+            # Polars does not automatically use the Iceberg table's S3 configuration.
+            # The REST catalog provides temporary (STS) credentials via table.config,
+            # but without passing them explicitly, Polars falls back to its default
+            # credential chain (e.g. environment variables or EC2 metadata), which
+            # may fail. Therefore, we forward the table's storage config so Polars
+            # can access the underlying S3 data correctly.
+            return polars.scan_iceberg(table, storage_options=table.config)
+        return table
 
     def list_tables(self):
         return self._catalog.list_tables(self._namespace)

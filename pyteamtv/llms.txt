@@ -13,10 +13,16 @@ import polars as pl
 
 team = get_team("Team Name")  # requires TEAMTV_API_TOKEN env var
 catalog = team.get_catalog()
-df = catalog.load_table("observations").scan().to_polars()
+df = catalog.load_table("observations", as_polars=True)
 
-# All standard Polars operations work
-shots = df.filter(pl.col("code") == "SHOT")
+# All standard Polars operations work with lazy dataframes
+shots = (
+    df
+    # This helps with filter pushdown to the Iceberg layer
+    .filter(pl.col("sporting_event_id") == "<sporting_event_id>")
+    .filter(pl.col("code") == "SHOT")
+    .collect()
+ )
 ```
 
 ## Dependencies needed
